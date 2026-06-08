@@ -1,0 +1,155 @@
+/* Theme Definitions */
+
+/* ========== Dark Theme (Default) ========== */
+.theme-dark,
+:root {
+  /* Base colors */
+  --color-bg-primary: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-bg-tertiary: #334155;
+  
+  /* Text colors */
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-hover: rgba(255, 255, 255, 0.18);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+  --glass-shadow-hover: rgba(0, 0, 0, 0.15);
+}
+
+/* ========== Light Theme ========== */
+.theme-light {
+  /* Base colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-tertiary: #e2e8f0;
+  
+  /* Text colors */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  
+  /* Glassmorphism (inverted) */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-border-hover: rgba(0, 0, 0, 0.15);
+  --glass-shadow: rgba(0, 0, 0, 0.05);
+  --glass-shadow-hover: rgba(0, 0, 0, 0.1);
+  
+  /* Status colors adjustments for light theme */
+  --color-success-bg: rgba(16, 185, 129, 0.15);
+  --color-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-error-bg: rgba(239, 68, 68, 0.15);
+  --color-info-bg: rgba(6, 182, 212, 0.15);
+}
+
+/* Light theme scrollbar */
+.theme-light::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+.theme-light::-webkit-scrollbar-thumb {
+  background: var(--color-bg-tertiary);
+}
+
+.theme-light::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* Light theme sidebar glass effect */
+.theme-light .sidebar-glass {
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 250, 252, 0.95) 0%,
+    rgba(241, 245, 249, 0.95) 100%
+  );
+  border-right-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0 24px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ========== Theme Transition ========== */
+html {
+  transition: background-color 300ms var(--easing-smooth),
+              color 300ms var(--easing-smooth);
+}
+
+.glass-effect,
+.card-glass,
+.sidebar-glass,
+.dropdown-glass {
+  transition: background 300ms var(--easing-smooth),
+              border-color 300ms var(--easing-smooth),
+              box-shadow 300ms var(--easing-smooth);
+}
+
+/* Prevent theme transition on page load */
+.preload * {
+  transition: none !important;
+}
+
+/* ========== Theme Toggle Animation ========== */
+@keyframes theme-switch {
+  0% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  50% {
+    opacity: 0.5;
+    transform: rotate(180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(360deg);
+  }
+}
+
+.theme-switching {
+  animation: theme-switch 300ms var(--easing-smooth);
+}
+
+/* ========== Color Mode Preferences (System) ========== */
+@media (prefers-color-scheme: dark) {
+  :root:not(.theme-light) {
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-bg-tertiary: #334155;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not(.theme-dark) {
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f8fafc;
+    --color-bg-tertiary: #e2e8f0;
+  }
+}
+
+/* ========== Contrast Adjustments for Accessibility ========== */
+@media (prefers-contrast: high) {
+  :root {
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --color-text-secondary: #e2e8f0;
+  }
+  
+  .theme-light {
+    --glass-border: rgba(0, 0, 0, 0.3);
+    --color-text-secondary: #334155;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

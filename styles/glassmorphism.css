@@ -1,0 +1,183 @@
+/* Glassmorphism Effects */
+
+/* ========== Glass Effect Utility ========== */
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-base);
+}
+
+.glass-effect:hover {
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 12px 40px 0 var(--glass-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* ========== Fallback for Browsers Without Backdrop Filter ========== */
+@supports not (backdrop-filter: blur(20px)) {
+  .glass-effect {
+    /* Fallback to solid semi-transparent background */
+    background: rgba(30, 41, 59, 0.9);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  .theme-light .glass-effect {
+    background: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* ========== Glass Variants ========== */
+.glass-effect-subtle {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-lg);
+}
+
+.glass-effect-strong {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-2xl);
+}
+
+/* ========== Glass with Glow Effect ========== */
+.glass-glow {
+  position: relative;
+}
+
+.glass-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.3), 
+    rgba(16, 185, 129, 0.3), 
+    rgba(245, 158, 11, 0.3)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.glass-glow:hover::before {
+  opacity: 1;
+}
+
+/* ========== Frosted Overlay ========== */
+.frosted-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: var(--z-modal-backdrop);
+}
+
+/* ========== Glass Container with Inner Shadow ========== */
+.glass-inset {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.05),
+    0 8px 32px 0 var(--glass-shadow);
+}
+
+/* ========== Privacy Mode Blur Effect ========== */
+.privacy-mode [data-privacy="blur"] {
+  filter: blur(4px);
+  user-select: none;
+  pointer-events: none;
+  transition: filter var(--transition-base);
+}
+
+.privacy-mode [data-privacy="hide"] {
+  visibility: hidden;
+}
+
+.privacy-mode [data-privacy="mask"] {
+  opacity: 0.5;
+}
+
+/* ========== Shimmer Effect (for loading states) ========== */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.glass-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* ========== Card Glass Effect ========== */
+.card-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-base);
+}
+
+.card-glass:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* ========== Sidebar Glass Effect ========== */
+.sidebar-glass {
+  background: linear-gradient(
+    to bottom,
+    rgba(30, 41, 59, 0.95) 0%,
+    rgba(15, 23, 42, 0.95) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-right: 1px solid var(--glass-border);
+  box-shadow: 4px 0 24px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* ========== Dropdown Glass Effect ========== */
+.dropdown-glass {
+  background: var(--color-bg-secondary);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}

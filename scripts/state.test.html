@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State.js Unit Tests</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 20px;
+      background: #1e293b;
+      color: #f1f5f9;
+    }
+    
+    .test-suite {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #3b82f6;
+    }
+    
+    .test-result {
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+    
+    .test-pass {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: #10b981;
+    }
+    
+    .test-fail {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+    }
+    
+    .test-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .test-error {
+      color: #fca5a5;
+      font-size: 0.9em;
+      font-family: monospace;
+      margin-top: 8px;
+    }
+    
+    .summary {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 8px;
+      font-size: 1.2em;
+    }
+    
+    .summary.all-pass {
+      background: rgba(16, 185, 129, 0.1);
+      border: 2px solid #10b981;
+    }
+    
+    .summary.has-fail {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-suite">
+    <h1>State.js Unit Tests</h1>
+    <div id="test-results"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+
+  <script type="module">
+    // Import state module
+    import AppState from './state.js';
+    
+    // Test framework
+    const results = [];
+    
+    function test(name, fn) {
+      try {
+        fn();
+        results.push({ name, passed: true });
+        displayResult(name, true);
+      } catch (error) {
+        results.push({ name, passed: false, error: error.message });
+        displayResult(name, false, error.message);
+      }
+    }
+    
+    function expect(value) {
+      return {
+        toBe(expected) {
+          if (value !== expected) {
+            throw new Error(`Expected ${JSON.stringify(expected)} but got ${JSON.stringify(value)}`);
+          }
+        },
+        toEqual(expected) {
+          if (JSON.stringify(value) !== JSON.stringify(expected)) {
+            throw new Error(`Expected ${JSON.stringify(expected)} but got ${JSON.stringify(value)}`);
+          }
+        },
+        toBeInstanceOf(constructor) {
+          if (!(value instanceof constructor)) {
+            throw new Error(`Expected instance of ${constructor.name} but got ${typeof value}`);
+          }
+        },
+        toBeTruthy() {
+          if (!value) {
+            throw new Error(`Expected truthy value but got ${value}`);
+          }
+        },
+        toHaveBeenCalled() {
+          if (!value.called) {
+            throw new Error('Expected function to have been called');
+          }
+        },
+        toThrow() {
+          try {
+            value();
+            throw new Error('Expected function to throw but it did not');
+          } catch (e) {
+            // Expected to throw
+          }
+        }
+      };
+    }
+    
+    function displayResult(name, passed, error) {
+      const resultsDiv = document.getElementById('test-results');
+      const div = document.createElement('div');
+      div.className = `test-result ${passed ? 'test-pass' : 'test-fail'}`;
+      
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'test-name';
+      nameDiv.textContent = `${passed ? '✓' : '✗'} ${name}`;
+      div.appendChild(nameDiv);
+      
+      if (error) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'test-error';
+        errorDiv.textContent = error;
+        div.appendChild(errorDiv);
+      }
+      
+      resultsDiv.appendChild(div);
+    }
+    
+    function displaySummary() {
+      const summaryDiv = document.getElementById('summary');
+      const passed = results.filter(r => r.passed).length;
+      const failed = results.filter(r => !r.passed).length;
+      const total = results.length;
+      
+      summaryDiv.textContent = `Tests: ${passed}/${total} passed`;
+      summaryDiv.className = `summary ${failed === 0 ? 'all-pass' : 'has-fail'}`;
+    }
+    
+    // Run tests
+    console.log('Starting State.js tests...');
+    
+    // Test 1: Initial state properties
+    test('should have correct initial state properties', () => {
+      expect(AppState.theme).toBe('dark');
+      expect(AppState.privacyMode).toBe(false);
+      expect(AppState.activeSection).toBe('dashboard');
+      expect(Array.isArray(AppState.notifications)).toBeTruthy();
+      expect(Array.isArray(AppState.users)).toBeTruthy();
+      expect(Array.isArray(AppState.activities)).toBeTruthy();
+      expect(typeof AppState.metrics).toBe('object');
+    });
+    
+    // Test 2: Subscribers set exists
+    test('should have a subscribers Set', () => {
+      expect(AppState.subscribers).toBeInstanceOf(Set);
+    });
+    
+    // Test 3: Subscribe method
+    test('should allow subscribing with a callback', () => {
+      const callback = () => {};
+      const unsubscribe = AppState.subscribe(callback);
+      expect(AppState.subscribers.has(callback)).toBeTruthy();
+      
+      // Cleanup
+      unsubscribe();
+    });
+    
+    // Test 4: Subscribe returns unsubscribe function
+    test('should return unsubscribe function from subscribe', () => {
+      const callback = () => {};
+      const unsubscribe = AppState.subscribe(callback);
+      expect(typeof unsubscribe).toBe('function');
+      
+      unsubscribe();
+      expect(AppState.subscribers.has(callback)).toBe(false);
+    });
+    
+    // Test 5: Subscribe throws on invalid callback
+    test('should throw error if subscribe is called without function', () => {
+      expect(() => AppState.subscribe('not a function')).toThrow();
+    });
+    
+    // Test 6: setState updates state
+    test('should update state with setState', () => {
+      AppState.setState({ theme: 'light' });
+      expect(AppState.theme).toBe('light');
+      
+      // Reset
+      AppState.setState({ theme: 'dark' });
+    });
+    
+    // Test 7: setState notifies subscribers
+    test('should notify subscribers when state changes', () => {
+      let notified = false;
+      let receivedUpdates = null;
+      
+      const callback = (updates) => {
+        notified = true;
+        receivedUpdates = updates;
+      };
+      
+      const unsubscribe = AppState.subscribe(callback);
+      AppState.setState({ privacyMode: true });
+      
+      expect(notified).toBeTruthy();
+      expect(receivedUpdates.privacyMode).toBe(true);
+      
+      // Cleanup
+      unsubscribe();
+      AppState.setState({ privacyMode: false });
+    });
+    
+    // Test 8: setState only notifies on actual changes
+    test('should not notify if state value does not change', () => {
+      let notifyCount = 0;
+      
+      const callback = () => {
+        notifyCount++;
+      };
+      
+      const unsubscribe = AppState.subscribe(callback);
+      
+      // Set to same value
+      const currentTheme = AppState.theme;
+      AppState.setState({ theme: currentTheme });
+      
+      expect(notifyCount).toBe(0);
+      
+      // Cleanup
+      unsubscribe();
+    });
+    
+    // Test 9: setState with multiple properties
+    test('should update multiple properties at once', () => {
+      const updates = {
+        theme: 'light',
+        privacyMode: true,
+        activeSection: 'users'
+      };
+      
+      AppState.setState(updates);
+      
+      expect(AppState.theme).toBe('light');
+      expect(AppState.privacyMode).toBe(true);
+      expect(AppState.activeSection).toBe('users');
+      
+      // Reset
+      AppState.reset();
+    });
+    
+    // Test 10: setState throws on invalid input
+    test('should throw error if setState is called with non-object', () => {
+      expect(() => AppState.setState(null)).toThrow();
+      expect(() => AppState.setState('string')).toThrow();
+    });
+    
+    // Test 11: notify calls all subscribers
+    test('should call all subscribers when notify is called', () => {
+      let count1 = 0;
+      let count2 = 0;
+      
+      const callback1 = () => { count1++; };
+      const callback2 = () => { count2++; };
+      
+      const unsub1 = AppState.subscribe(callback1);
+      const unsub2 = AppState.subscribe(callback2);
+      
+      AppState.notify({ test: 'value' });
+      
+      expect(count1).toBe(1);
+      expect(count2).toBe(1);
+      
+      // Cleanup
+      unsub1();
+      unsub2();
+    });
+    
+    // Test 12: notify handles subscriber errors
+    test('should handle errors in subscriber callbacks', () => {
+      const errorCallback = () => {
+        throw new Error('Test error');
+      };
+      const normalCallback = () => {};
+      
+      const unsub1 = AppState.subscribe(errorCallback);
+      const unsub2 = AppState.subscribe(normalCallback);
+      
+      // Should not throw even if subscriber throws
+      AppState.notify({ test: 'value' });
+      
+      // Cleanup
+      unsub1();
+      unsub2();
+    });
+    
+    // Test 13: getState returns state snapshot
+    test('should return state snapshot with getState', () => {
+      const state = AppState.getState();
+      
+      expect(typeof state).toBe('object');
+      expect(state.theme).toBe(AppState.theme);
+      expect(state.privacyMode).toBe(AppState.privacyMode);
+      expect(state.activeSection).toBe(AppState.activeSection);
+      expect(Array.isArray(state.notifications)).toBeTruthy();
+      expect(Array.isArray(state.users)).toBeTruthy();
+      expect(Array.isArray(state.activities)).toBeTruthy();
+    });
+    
+    // Test 14: getState does not include subscribers
+    test('should not include subscribers in getState result', () => {
+      const state = AppState.getState();
+      expect(state.subscribers).toBe(undefined);
+    });
+    
+    // Test 15: reset restores initial values
+    test('should reset state to initial values', () => {
+      AppState.setState({
+        theme: 'light',
+        privacyMode: true,
+        activeSection: 'security'
+      });
+      
+      AppState.reset();
+      
+      expect(AppState.theme).toBe('dark');
+      expect(AppState.privacyMode).toBe(false);
+      expect(AppState.activeSection).toBe('dashboard');
+    });
+    
+    // Test 16: Array state updates
+    test('should update array state properties', () => {
+      const notifications = [
+        { id: '1', message: 'Test notification' }
+      ];
+      
+      AppState.setState({ notifications });
+      expect(AppState.notifications.length).toBe(1);
+      expect(AppState.notifications[0].id).toBe('1');
+      
+      // Reset
+      AppState.setState({ notifications: [] });
+    });
+    
+    // Test 17: Object state updates
+    test('should update object state properties', () => {
+      const metrics = {
+        totalUsers: 100,
+        activeUsers: 50
+      };
+      
+      AppState.setState({ metrics });
+      expect(AppState.metrics.totalUsers).toBe(100);
+      expect(AppState.metrics.activeUsers).toBe(50);
+      
+      // Reset
+      AppState.setState({ metrics: {} });
+    });
+    
+    // Test 18: Subscriber receives state reference
+    test('should pass state reference to subscribers', () => {
+      let receivedState = null;
+      
+      const callback = (updates, state) => {
+        receivedState = state;
+      };
+      
+      const unsubscribe = AppState.subscribe(callback);
+      AppState.setState({ theme: 'light' });
+      
+      expect(receivedState).toBe(AppState);
+      
+      // Cleanup
+      unsubscribe();
+      AppState.setState({ theme: 'dark' });
+    });
+    
+    // Display summary
+    displaySummary();
+    
+    console.log('Tests completed:', results);
+  </script>
+</body>
+</html>

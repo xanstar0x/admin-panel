@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeStorage Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    h1 {
+      margin-top: 0;
+      color: #3b82f6;
+    }
+    .section {
+      margin: 30px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+    }
+    .section h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #cbd5e1;
+    }
+    input, button {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: #f1f5f9;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button {
+      background: #3b82f6;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    button.danger {
+      background: #ef4444;
+    }
+    button.danger:hover {
+      background: #dc2626;
+    }
+    .output {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      min-height: 60px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .success {
+      color: #10b981;
+    }
+    .error {
+      color: #ef4444;
+    }
+    .info {
+      color: #06b6d4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ SafeStorage Демонстрация</h1>
+    <p>Интерактивная демонстрация утилиты безопасной работы с localStorage</p>
+
+    <div class="section">
+      <h2>1. Сохранить данные</h2>
+      <input type="text" id="setKey" placeholder="Ключ (например: theme)" value="admin-panel-theme">
+      <input type="text" id="setValue" placeholder="Значение (например: dark)" value="dark">
+      <button onclick="testSet()">Сохранить</button>
+      <div id="setOutput" class="output"></div>
+    </div>
+
+    <div class="section">
+      <h2>2. Получить данные</h2>
+      <input type="text" id="getKey" placeholder="Ключ" value="admin-panel-theme">
+      <input type="text" id="getDefault" placeholder="Значение по умолчанию" value="light">
+      <button onclick="testGet()">Получить</button>
+      <div id="getOutput" class="output"></div>
+    </div>
+
+    <div class="section">
+      <h2>3. Тестирование quota exceeded</h2>
+      <p style="font-size: 13px; color: #94a3b8;">
+        Попытка записать большой объем данных для проверки обработки ошибки квоты
+      </p>
+      <button onclick="testQuotaExceeded()">Заполнить хранилище</button>
+      <div id="quotaOutput" class="output"></div>
+    </div>
+
+    <div class="section">
+      <h2>4. Очистка старых данных</h2>
+      <p style="font-size: 13px; color: #94a3b8;">
+        Удаляет все данные кроме критичных (admin-panel-theme, privacy-mode)
+      </p>
+      <button onclick="addTestData()">Добавить тестовые данные</button>
+      <button class="danger" onclick="testClearOldData()">Очистить старые данные</button>
+      <div id="clearOutput" class="output"></div>
+    </div>
+
+    <div class="section">
+      <h2>5. Просмотр всего localStorage</h2>
+      <button onclick="viewAll()">Показать все данные</button>
+      <button class="danger" onclick="clearAll()">Очистить всё</button>
+      <div id="viewOutput" class="output"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import SafeStorage from './storage.js';
+    window.SafeStorage = SafeStorage;
+
+    window.testSet = function() {
+      const key = document.getElementById('setKey').value;
+      const value = document.getElementById('setValue').value;
+      const output = document.getElementById('setOutput');
+      
+      if (!key) {
+        output.innerHTML = '<span class="error">Ошибка: ключ не может быть пустым</span>';
+        return;
+      }
+      
+      const result = SafeStorage.set(key, value);
+      
+      if (result) {
+        output.innerHTML = `<span class="success">✓ Успешно сохранено</span>\nКлюч: ${key}\nЗначение: ${JSON.stringify(value)}`;
+      } else {
+        output.innerHTML = '<span class="error">✗ Ошибка сохранения</span>';
+      }
+    };
+
+    window.testGet = function() {
+      const key = document.getElementById('getKey').value;
+      const defaultValue = document.getElementById('getDefault').value;
+      const output = document.getElementById('getOutput');
+      
+      if (!key) {
+        output.innerHTML = '<span class="error">Ошибка: ключ не может быть пустым</span>';
+        return;
+      }
+      
+      const result = SafeStorage.get(key, defaultValue);
+      
+      if (result !== null) {
+        output.innerHTML = `<span class="success">✓ Данные получены</span>\nКлюч: ${key}\nЗначение: ${JSON.stringify(result)}\nТип: ${typeof result}`;
+      } else {
+        output.innerHTML = `<span class="info">ℹ Ключ не найден, возвращено значение по умолчанию:</span>\n${JSON.stringify(defaultValue)}`;
+      }
+    };
+
+    window.testQuotaExceeded = function() {
+      const output = document.getElementById('quotaOutput');
+      output.innerHTML = '<span class="info">Заполняем localStorage...</span>';
+      
+      let i = 0;
+      const largeData = 'x'.repeat(100000); // 100KB строка
+      
+      try {
+        // Пытаемся заполнить хранилище
+        while (i < 100) {
+          SafeStorage.set(`test-quota-${i}`, largeData);
+          i++;
+        }
+        output.innerHTML = `<span class="success">✓ Записано ${i} записей по 100KB</span>\nQuota exceeded не произошло (хранилище достаточно большое)`;
+      } catch (error) {
+        output.innerHTML = `<span class="info">ℹ Достигнут лимит хранилища после ${i} записей</span>\n${error.message}`;
+      }
+      
+      // Показываем размер
+      let totalSize = 0;
+      for (let key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+          totalSize += localStorage[key].length + key.length;
+        }
+      }
+      output.innerHTML += `\n\nТекущий размер localStorage: ~${Math.round(totalSize / 1024)} KB`;
+    };
+
+    window.addTestData = function() {
+      const output = document.getElementById('clearOutput');
+      
+      // Добавляем критичные данные
+      SafeStorage.set('admin-panel-theme', 'dark');
+      SafeStorage.set('privacy-mode', true);
+      
+      // Добавляем некритичные данные
+      SafeStorage.set('cache-user-1', { name: 'User 1', cached: true });
+      SafeStorage.set('cache-user-2', { name: 'User 2', cached: true });
+      SafeStorage.set('temp-data', { temporary: true });
+      SafeStorage.set('analytics-data', { views: 100 });
+      
+      output.innerHTML = '<span class="success">✓ Добавлены тестовые данные</span>\nКритичные: admin-panel-theme, privacy-mode\nНекритичные: cache-user-1, cache-user-2, temp-data, analytics-data';
+    };
+
+    window.testClearOldData = function() {
+      const output = document.getElementById('clearOutput');
+      const beforeKeys = Object.keys(localStorage);
+      
+      SafeStorage.clearOldData();
+      
+      const afterKeys = Object.keys(localStorage);
+      const removed = beforeKeys.filter(k => !afterKeys.includes(k));
+      
+      output.innerHTML = `<span class="success">✓ Очистка выполнена</span>\n\nОсталось ключей: ${afterKeys.length}\nУдалено ключей: ${removed.length}\n\nОставшиеся ключи:\n${afterKeys.join(', ') || '(пусто)'}\n\nУдалённые ключи:\n${removed.join(', ') || '(нет)'}`;
+    };
+
+    window.viewAll = function() {
+      const output = document.getElementById('viewOutput');
+      const keys = Object.keys(localStorage);
+      
+      if (keys.length === 0) {
+        output.innerHTML = '<span class="info">localStorage пуст</span>';
+        return;
+      }
+      
+      let content = `<span class="success">Всего записей: ${keys.length}</span>\n\n`;
+      keys.forEach(key => {
+        const value = localStorage.getItem(key);
+        const size = (key.length + value.length);
+        content += `${key}: ${value.substring(0, 50)}${value.length > 50 ? '...' : ''} (${size} bytes)\n`;
+      });
+      
+      output.innerHTML = content;
+    };
+
+    window.clearAll = function() {
+      if (confirm('Вы уверены, что хотите очистить весь localStorage?')) {
+        localStorage.clear();
+        document.getElementById('viewOutput').innerHTML = '<span class="success">✓ localStorage полностью очищен</span>';
+      }
+    };
+
+    // Показываем начальное состояние
+    window.viewAll();
+  </script>
+</body>
+</html>

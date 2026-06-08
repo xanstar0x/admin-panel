@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeStorage Unit Tests</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-suite {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-top: 0;
+    }
+    .test-result {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border-left: 4px solid;
+    }
+    .test-result.pass {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+    .test-result.fail {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e9ecef;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .summary.all-pass {
+      background: #d4edda;
+      color: #155724;
+    }
+    .summary.has-fail {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-suite">
+    <h1>SafeStorage Unit Tests</h1>
+    <div id="test-results"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+
+  <script type="module">
+    import SafeStorage from './storage.js';
+
+    const results = [];
+    const resultsContainer = document.getElementById('test-results');
+    const summaryContainer = document.getElementById('summary');
+
+    function assert(condition, testName, message) {
+      const passed = !!condition;
+      results.push(passed);
+      
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+      resultDiv.innerHTML = `
+        <strong>${passed ? '✓' : '✗'} ${testName}</strong>
+        ${message ? `<br><small>${message}</small>` : ''}
+      `;
+      resultsContainer.appendChild(resultDiv);
+    }
+
+    // Clear localStorage before tests
+    localStorage.clear();
+
+    // Test 1: get() returns default value when key doesn't exist
+    const defaultValue = { default: true };
+    const result1 = SafeStorage.get('non-existent-key', defaultValue);
+    assert(
+      result1 === defaultValue,
+      'get() returns default value for non-existent key',
+      `Expected: ${JSON.stringify(defaultValue)}, Got: ${JSON.stringify(result1)}`
+    );
+
+    // Test 2: set() stores value successfully
+    const testValue = { theme: 'dark', enabled: true };
+    const setResult = SafeStorage.set('test-key', testValue);
+    assert(
+      setResult === true,
+      'set() returns true on successful save',
+      `Expected: true, Got: ${setResult}`
+    );
+
+    // Test 3: get() retrieves stored value correctly
+    const retrievedValue = SafeStorage.get('test-key');
+    assert(
+      JSON.stringify(retrievedValue) === JSON.stringify(testValue),
+      'get() retrieves stored value correctly',
+      `Expected: ${JSON.stringify(testValue)}, Got: ${JSON.stringify(retrievedValue)}`
+    );
+
+    // Test 4: get() handles different data types (string)
+    SafeStorage.set('string-key', 'hello world');
+    const stringValue = SafeStorage.get('string-key');
+    assert(
+      stringValue === 'hello world',
+      'get() handles string values',
+      `Expected: "hello world", Got: "${stringValue}"`
+    );
+
+    // Test 5: get() handles different data types (number)
+    SafeStorage.set('number-key', 42);
+    const numberValue = SafeStorage.get('number-key');
+    assert(
+      numberValue === 42,
+      'get() handles number values',
+      `Expected: 42, Got: ${numberValue}`
+    );
+
+    // Test 6: get() handles different data types (boolean)
+    SafeStorage.set('boolean-key', true);
+    const booleanValue = SafeStorage.get('boolean-key');
+    assert(
+      booleanValue === true,
+      'get() handles boolean values',
+      `Expected: true, Got: ${booleanValue}`
+    );
+
+    // Test 7: get() handles different data types (array)
+    const arrayValue = [1, 2, 3, 4, 5];
+    SafeStorage.set('array-key', arrayValue);
+    const retrievedArray = SafeStorage.get('array-key');
+    assert(
+      JSON.stringify(retrievedArray) === JSON.stringify(arrayValue),
+      'get() handles array values',
+      `Expected: ${JSON.stringify(arrayValue)}, Got: ${JSON.stringify(retrievedArray)}`
+    );
+
+    // Test 8: get() handles null values
+    SafeStorage.set('null-key', null);
+    const nullValue = SafeStorage.get('null-key');
+    assert(
+      nullValue === null,
+      'get() handles null values',
+      `Expected: null, Got: ${nullValue}`
+    );
+
+    // Test 9: clearOldData() preserves critical keys
+    SafeStorage.set('admin-panel-theme', 'dark');
+    SafeStorage.set('privacy-mode', true);
+    SafeStorage.set('non-critical-data', 'should be removed');
+    SafeStorage.clearOldData();
+    
+    const themePreserved = SafeStorage.get('admin-panel-theme');
+    const privacyPreserved = SafeStorage.get('privacy-mode');
+    const nonCriticalRemoved = SafeStorage.get('non-critical-data');
+    
+    assert(
+      themePreserved === 'dark' && privacyPreserved === true && nonCriticalRemoved === null,
+      'clearOldData() preserves critical keys and removes non-critical data',
+      `Theme: ${themePreserved}, Privacy: ${privacyPreserved}, Non-critical: ${nonCriticalRemoved}`
+    );
+
+    // Test 10: get() handles corrupted data gracefully
+    localStorage.setItem('corrupted-key', '{invalid json}');
+    const corruptedValue = SafeStorage.get('corrupted-key', 'fallback');
+    assert(
+      corruptedValue === 'fallback',
+      'get() returns default value for corrupted JSON',
+      `Expected: "fallback", Got: "${corruptedValue}"`
+    );
+
+    // Test 11: set() with nested objects
+    const nestedObject = {
+      user: {
+        name: 'Admin',
+        settings: {
+          theme: 'dark',
+          notifications: true
+        }
+      }
+    };
+    SafeStorage.set('nested-key', nestedObject);
+    const retrievedNested = SafeStorage.get('nested-key');
+    assert(
+      JSON.stringify(retrievedNested) === JSON.stringify(nestedObject),
+      'set()/get() handle nested objects',
+      `Deep equality check passed`
+    );
+
+    // Display summary
+    const totalTests = results.length;
+    const passedTests = results.filter(r => r).length;
+    const failedTests = totalTests - passedTests;
+    
+    summaryContainer.className = `summary ${failedTests === 0 ? 'all-pass' : 'has-fail'}`;
+    summaryContainer.innerHTML = `
+      <div>Total Tests: ${totalTests}</div>
+      <div>Passed: ${passedTests}</div>
+      <div>Failed: ${failedTests}</div>
+      <div style="margin-top: 10px;">${failedTests === 0 ? '✓ All tests passed!' : '✗ Some tests failed'}</div>
+    `;
+
+    // Clean up
+    localStorage.clear();
+  </script>
+</body>
+</html>
