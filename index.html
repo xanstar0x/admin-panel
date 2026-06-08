@@ -1,356 +1,1540 @@
 <!DOCTYPE html>
-<html lang="ru" class="theme-dark">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Modern Privacy-First Admin Dashboard with glassmorphism design">
-  <title>Admin Panel — Privacy First Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexusAdmin — Control Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0e1a;--bg2:#0f1629;--bg3:#141d35;--bgc:rgba(255,255,255,.04);--bgch:rgba(255,255,255,.07);--bdr:rgba(255,255,255,.08);--bdrh:rgba(255,255,255,.16);--t1:#f1f5f9;--t2:#94a3b8;--tm:#475569;--acc:#6366f1;--accl:#818cf8;--accg:rgba(99,102,241,.3);--grn:#10b981;--grng:rgba(16,185,129,.2);--yel:#f59e0b;--red:#ef4444;--redg:rgba(239,68,68,.2);--blu:#3b82f6;--pur:#8b5cf6;--pnk:#ec4899;--sw:260px;--hh:64px;--r:12px;--rs:8px;--rl:16px;--sh:0 4px 24px rgba(0,0,0,.4);--shl:0 8px 40px rgba(0,0,0,.6);--tr:.2s cubic-bezier(.4,0,.2,1)}
+[data-theme=light]{--bg:#f0f4ff;--bg2:#fff;--bg3:#e8eeff;--bgc:rgba(255,255,255,.8);--bgch:rgba(255,255,255,.95);--bdr:rgba(99,102,241,.12);--bdrh:rgba(99,102,241,.25);--t1:#1e293b;--t2:#475569;--tm:#94a3b8;--accg:rgba(99,102,241,.15);--sh:0 4px 24px rgba(99,102,241,.1);--shl:0 8px 40px rgba(99,102,241,.15)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
+input,select,textarea{font:inherit;color:inherit;background:none;border:none;outline:none}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(99,102,241,.15) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(139,92,246,.1) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 50% 50%,rgba(16,185,129,.05) 0%,transparent 60%);pointer-events:none}
+.app{display:flex;min-height:100vh;position:relative}
 
-  <!-- Stylesheets (order matters!) -->
-  <link rel="stylesheet" href="styles/variables.css">
-  <link rel="stylesheet" href="styles/reset.css">
-  <link rel="stylesheet" href="styles/glassmorphism.css">
-  <link rel="stylesheet" href="styles/themes.css">
-  <link rel="stylesheet" href="styles/layout.css">
-  <link rel="stylesheet" href="styles/components.css">
-  <link rel="stylesheet" href="styles/extra.css">
+/* SIDEBAR */
+.sidebar{width:var(--sw);min-height:100vh;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:width var(--tr),transform var(--tr);backdrop-filter:blur(20px)}
+.logo{display:flex;align-items:center;gap:10px;padding:20px 20px 16px;border-bottom:1px solid var(--bdr)}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--acc),var(--pur));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 0 20px var(--accg)}
+.logo-text{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.logo-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.5px;background:linear-gradient(135deg,var(--acc),var(--pur));color:#fff;padding:2px 6px;border-radius:4px}
+.nav-section{padding:16px 12px 8px}
+.nav-section-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tm);padding:0 8px;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);cursor:pointer;transition:all var(--tr);position:relative;margin-bottom:2px;color:var(--t2);user-select:none}
+.nav-item:hover{background:var(--bgch);color:var(--t1)}
+.nav-item.active{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.1));color:var(--accl);box-shadow:inset 0 0 0 1px rgba(99,102,241,.2)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:linear-gradient(to bottom,var(--acc),var(--pur));border-radius:0 2px 2px 0}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-label{font-size:13px;font-weight:500}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--red);color:#fff;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.nav-badge.g{background:var(--grn)}
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid var(--bdr)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:var(--rs);cursor:pointer;transition:all var(--tr)}
+.user-card:hover{background:var(--bgch)}
+.uav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--pnk));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.uinfo{flex:1;min-width:0}
+.uname{font-size:13px;font-weight:600}
+.urole{font-size:11px;color:var(--tm)}
+.udot{width:8px;height:8px;border-radius:50%;background:var(--grn);box-shadow:0 0 6px var(--grn)}
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+/* MAIN */
+.main{flex:1;margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
+
+/* TOPBAR */
+.topbar{height:var(--hh);background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:16px;padding:0 24px;position:sticky;top:0;z-index:50}
+[data-theme=light] .topbar{background:rgba(240,244,255,.9)}
+.tbar-title{font-size:18px;font-weight:700;flex:1}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bgc);border:1px solid var(--bdr);border-radius:var(--rs);padding:8px 12px;width:260px;transition:all var(--tr);cursor:pointer}
+.search-box:hover{border-color:var(--bdrh)}
+.search-box span{color:var(--tm)}
+.search-hint{font-size:13px;color:var(--tm);flex:1}
+.tbar-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{width:38px;height:38px;border-radius:var(--rs);background:var(--bgc);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all var(--tr);position:relative}
+.icon-btn:hover{background:var(--bgch);border-color:var(--bdrh);transform:translateY(-1px)}
+.ndot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid var(--bg2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.2);opacity:.8}}
+
+/* PAGES */
+.page{display:none;padding:24px;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:22px;font-weight:700}
+.page-sub{font-size:13px;color:var(--t2);margin-top:2px}
+
+/* CARDS */
+.card{background:var(--bgc);border:1px solid var(--bdr);border-radius:var(--rl);backdrop-filter:blur(12px);transition:all var(--tr)}
+.card:hover{border-color:var(--bdrh);box-shadow:var(--sh)}
+.card-hdr{padding:16px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:600}
+.card-body{padding:20px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--bgc);border:1px solid var(--bdr);border-radius:var(--rl);padding:20px;cursor:pointer;transition:all var(--tr);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:var(--bdrh)}
+.stat-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.stat-chg{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;display:flex;align-items:center;gap:3px}
+.up{background:rgba(16,185,129,.15);color:var(--grn)}
+.dn{background:rgba(239,68,68,.15);color:var(--red)}
+.stat-val{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1}
+.stat-lbl{font-size:12px;color:var(--t2);margin-top:4px}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.g75{display:grid;grid-template-columns:7fr 5fr;gap:16px}
+.g64{display:grid;grid-template-columns:6fr 4fr;gap:16px}
+.mb4{margin-bottom:16px}
+.mb6{margin-bottom:24px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--tm);padding:10px 16px;border-bottom:1px solid var(--bdr);white-space:nowrap}
+tbody tr{transition:background var(--tr);cursor:pointer}
+tbody tr:hover{background:var(--bgch)}
+tbody td{padding:12px 16px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.03)}
+[data-theme=light] tbody td{border-bottom:1px solid rgba(0,0,0,.04)}
+.ucell{display:flex;align-items:center;gap:10px}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;color:#fff}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
+.bg{background:rgba(16,185,129,.15);color:var(--grn)}
+.br{background:rgba(239,68,68,.15);color:var(--red)}
+.by{background:rgba(245,158,11,.15);color:var(--yel)}
+.bb{background:rgba(59,130,246,.15);color:var(--blu)}
+.bp{background:rgba(139,92,246,.15);color:var(--pur)}
+.bk{background:rgba(148,163,184,.15);color:var(--t2)}
+.sdot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dg{background:var(--grn);box-shadow:0 0 4px var(--grn)}
+.dr{background:var(--red)}
+.dy{background:var(--yel)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--rs);transition:all var(--tr);cursor:pointer;white-space:nowrap}
+.btn-p{background:linear-gradient(135deg,var(--acc),var(--pur));color:#fff;border:none;box-shadow:0 4px 15px var(--accg)}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--accg)}
+.btn-s{background:var(--bgc);border:1px solid var(--bdr)}
+.btn-s:hover{background:var(--bgch);border-color:var(--bdrh)}
+.btn-d{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-d:hover{background:rgba(239,68,68,.25)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-icon{padding:6px 8px}
+
+/* INPUTS */
+.ig{margin-bottom:16px}
+.ilbl{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;display:block}
+.inp{width:100%;background:var(--bgc);border:1px solid var(--bdr);border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--t1);transition:all var(--tr)}
+.inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accg);outline:none}
+.inp::placeholder{color:var(--tm)}
+.sel{width:100%;appearance:none;background:var(--bgc);border:1px solid var(--bdr);border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--t1);cursor:pointer;transition:all var(--tr)}
+.sel:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accg);outline:none}
+
+/* PROGRESS */
+.pb-wrap{background:var(--bgc);border-radius:4px;height:6px;overflow:hidden}
+.pb{height:100%;border-radius:4px;transition:width 1s ease}
+
+/* TOGGLE */
+.toggle{width:42px;height:24px;border-radius:12px;background:var(--bg3);border:1px solid var(--bdr);position:relative;cursor:pointer;transition:all var(--tr);flex-shrink:0}
+.toggle.on{background:var(--acc);border-color:var(--acc)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all var(--tr);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle.on::after{left:20px}
+
+/* ACTIVITY */
+.act-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.act-item:last-child{border-bottom:none}
+.act-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--bg3)}
+.act-body{flex:1}
+.act-txt{font-size:13px;line-height:1.4}
+.act-time{font-size:11px;color:var(--tm);margin-top:2px}
+
+/* NOTIF PANEL */
+.np{position:fixed;top:var(--hh);right:16px;width:360px;max-height:500px;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);box-shadow:var(--shl);z-index:200;overflow:hidden;display:none;flex-direction:column;backdrop-filter:blur(20px)}
+.np.open{display:flex;animation:slideDown .2s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.np-hdr{padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.np-list{overflow-y:auto;flex:1}
+.ni{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background var(--tr)}
+.ni:hover{background:var(--bgch)}
+.ni.unread{background:rgba(99,102,241,.05)}
+.ni-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ni-body{flex:1}
+.ni-title{font-size:13px;font-weight:600}
+.ni-desc{font-size:12px;color:var(--t2);margin-top:2px}
+.ni-time{font-size:11px;color:var(--tm);margin-top:4px}
+.ui{width:8px;height:8px;border-radius:50%;background:var(--acc);margin-top:6px;flex-shrink:0}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-ov.open{display:flex;animation:fadeIn .2s ease}
+.modal{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shl);animation:scaleIn .2s ease}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-hdr{padding:20px 24px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.modal-hdr h2{font-size:16px;font-weight:700}
+.modal-body{padding:24px}
+.modal-ftr{padding:16px 24px;border-top:1px solid var(--bdr);display:flex;gap:10px;justify-content:flex-end}
+
+/* TOAST */
+.tc{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;flex-direction:column;gap:8px}
+.toast{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;min-width:300px;box-shadow:var(--shl);animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+.toast-success{border-left:3px solid var(--grn)}
+.toast-error{border-left:3px solid var(--red)}
+.toast-info{border-left:3px solid var(--acc)}
+.toast-warning{border-left:3px solid var(--yel)}
+.toast-icon{font-size:18px}
+.toast-body{flex:1}
+.toast-title{font-size:13px;font-weight:600}
+.toast-desc{font-size:12px;color:var(--t2)}
+
+/* CMD PALETTE */
+.cmd-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:500;display:none;align-items:flex-start;justify-content:center;padding-top:15vh}
+.cmd-ov.open{display:flex}
+.cmd{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);width:560px;max-width:95vw;box-shadow:var(--shl);overflow:hidden}
+.cmd-iw{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--bdr)}
+.cmd-inp{flex:1;font-size:15px;background:none}
+.cmd-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;transition:background var(--tr)}
+.cmd-item:hover,.cmd-item.sel{background:var(--bgch)}
+.cmd-ico{width:32px;height:32px;border-radius:8px;background:var(--bgc);display:flex;align-items:center;justify-content:center;font-size:14px}
+.cmd-lbl{font-size:13px;font-weight:500}
+.cmd-sub{font-size:11px;color:var(--tm)}
+.cmd-kbd{margin-left:auto;font-size:10px;background:var(--bgc);border:1px solid var(--bdr);padding:2px 6px;border-radius:4px;color:var(--tm)}
+
+/* SETTINGS */
+.stabs{display:flex;gap:4px;padding:4px;background:var(--bgc);border-radius:var(--rs);border:1px solid var(--bdr);margin-bottom:24px}
+.stab{flex:1;padding:8px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--t2);text-align:center;cursor:pointer;transition:all var(--tr)}
+.stab.active{background:linear-gradient(135deg,var(--acc),var(--pur));color:#fff}
+.ssec{display:none}
+.ssec.active{display:block}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bdr)}
+.srow:last-child{border-bottom:none}
+.sinfo{flex:1;margin-right:16px}
+.stitle{font-size:13px;font-weight:600}
+.sdesc{font-size:12px;color:var(--t2);margin-top:2px}
+
+/* SECURITY */
+.sr-ring{position:relative;width:120px;height:120px}
+.sr-ring svg{transform:rotate(-90deg)}
+.sr-bg{fill:none;stroke:var(--bdr);stroke-width:10}
+.sr-fg{fill:none;stroke:var(--grn);stroke-width:10;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:54;transition:stroke-dashoffset 1.5s ease,stroke .3s}
+.sr-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.sr-num{font-size:26px;font-weight:800}
+.sr-lbl{font-size:10px;color:var(--tm)}
+.threat-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.threat-item:last-child{border-bottom:none}
+.thr-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.thr-info{flex:1}
+.thr-name{font-size:13px;font-weight:600}
+.thr-desc{font-size:12px;color:var(--t2)}
+
+/* LOG */
+.log-line{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;font-family:monospace}
+.log-info{color:#60a5fa}
+.log-warn{color:var(--yel)}
+.log-error{color:var(--red)}
+.log-debug{color:var(--tm)}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dn{text-align:center;font-size:10px;color:var(--tm);font-weight:600;padding:4px 0}
+.cal-d{text-align:center;padding:5px;border-radius:6px;cursor:pointer;transition:all var(--tr);font-size:12px;line-height:1}
+.cal-d:hover{background:var(--bgch)}
+.cal-d.today{background:linear-gradient(135deg,var(--acc),var(--pur));color:#fff;font-weight:700}
+.cal-d.other{color:var(--tm)}
+.cal-d.event::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--acc);margin:1px auto 0}
+
+/* MISC */
+.flex{display:flex}
+.flex-col{flex-direction:column}
+.items-c{align-items:center}
+.jb{justify-content:space-between}
+.gap1{gap:4px}
+.gap2{gap:8px}
+.gap3{gap:12px}
+.tsm{font-size:12px}
+.tmuted{color:var(--t2)}
+.bold{font-weight:700}
+.mt2{margin-top:8px}
+.mt4{margin-top:16px}
+.w100{width:100%}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--bdrh)}
+
+/* MOBILE TOGGLE */
+.mob-toggle{display:none;width:36px;height:36px;border-radius:var(--rs);background:var(--bgc);border:1px solid var(--bdr);align-items:center;justify-content:center;font-size:18px}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+
+@media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr)}.g75,.g64{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.mob-open{transform:translateX(0)}.sb-ov{display:block;opacity:0;pointer-events:none;transition:opacity var(--tr)}.sb-ov.vis{opacity:1;pointer-events:all}.main{margin-left:0}.mob-toggle{display:flex}.search-box{width:160px}.stats-grid{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.page{padding:16px}}
+</style>
 </head>
 <body>
-  <!-- SVG Icon Sprite -->
-  <svg style="display:none;" aria-hidden="true">
-    <defs>
-      <symbol id="icon-dashboard" viewBox="0 0 24 24">
-        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-      </symbol>
-      <symbol id="icon-users" viewBox="0 0 24 24">
-        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-      </symbol>
-      <symbol id="icon-bell" viewBox="0 0 24 24">
-        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-      </symbol>
-      <symbol id="icon-shield" viewBox="0 0 24 24">
-        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-      </symbol>
-      <symbol id="icon-shield-check" viewBox="0 0 24 24">
-        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
-      </symbol>
-      <symbol id="icon-settings" viewBox="0 0 24 24">
-        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-      </symbol>
-      <symbol id="icon-analytics" viewBox="0 0 24 24">
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-      </symbol>
-      <symbol id="icon-activity" viewBox="0 0 24 24">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </symbol>
-      <symbol id="icon-eye" viewBox="0 0 24 24">
-        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-      </symbol>
-      <symbol id="icon-eye-off" viewBox="0 0 24 24">
-        <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
-      </symbol>
-      <symbol id="icon-sun" viewBox="0 0 24 24">
-        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
-      </symbol>
-      <symbol id="icon-moon" viewBox="0 0 24 24">
-        <path d="M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.06 7 9.54 0 4.48-2.94 8.27-7 9.54.95.3 1.95.46 3 .46 5.52 0 10-4.48 10-10S14.52 2 9 2z"/>
-      </symbol>
-      <symbol id="icon-alert-triangle" viewBox="0 0 24 24">
-        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-      </symbol>
-      <symbol id="icon-alert-octagon" viewBox="0 0 24 24">
-        <path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86L7.86 2zM13 17v-2h-2v2h2zm0-4V7h-2v6h2z"/>
-      </symbol>
-      <symbol id="icon-chevron-left" viewBox="0 0 24 24">
-        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-      </symbol>
-      <symbol id="icon-chevron-right" viewBox="0 0 24 24">
-        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-      </symbol>
-      <symbol id="icon-menu" viewBox="0 0 24 24">
-        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-      </symbol>
-      <symbol id="icon-close" viewBox="0 0 24 24">
-        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-      </symbol>
-      <symbol id="icon-user" viewBox="0 0 24 24">
-        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-      </symbol>
-      <symbol id="icon-download" viewBox="0 0 24 24">
-        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-      </symbol>
-      <symbol id="icon-cpu" viewBox="0 0 24 24">
-        <path d="M9 3v2H7V3H5v2H3v2h2v2H3v2h2v2H3v2h2v2h2v-2h2v2h2v-2h2v2h2v-2h2v2h2v-2h2v-2h-2v-2h2v-2h-2V9h2V7h-2V5h-2v2h-2V5h-2v2h-2V5H9V3zm0 4h6v10H9V7z"/>
-      </symbol>
-      <symbol id="icon-search" viewBox="0 0 24 24">
-        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-      </symbol>
-    </defs>
-  </svg>
 
-  <!-- Mobile sidebar overlay -->
-  <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+<div class="sb-ov" id="sbOv" onclick="closeMob()"></div>
 
-  <!-- Skip link -->
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="np" id="notifPanel">
+  <div class="np-hdr"><h3>🔔 Notifications</h3><div class="flex gap2"><button class="btn btn-sm btn-s" onclick="markAllRead()">Mark all read</button><button class="btn btn-sm btn-icon btn-s" onclick="closeNotif()">✕</button></div></div>
+  <div class="np-list" id="notifList"></div>
+</div>
 
-  <!-- Sidebar Navigation -->
-  <nav class="sidebar" id="sidebar" aria-label="Main navigation">
-    <div class="sidebar-header">
-      <svg class="logo-icon" aria-hidden="true">
-        <use href="#icon-shield"/>
-      </svg>
-      <h1 class="sidebar-title">Admin Panel</h1>
+<div class="cmd-ov" id="cmdOv" onclick="closeCmdPalette()">
+  <div class="cmd" onclick="event.stopPropagation()">
+    <div class="cmd-iw"><span style="font-size:18px;color:var(--tm)">⌘</span><input class="cmd-inp" id="cmdInp" placeholder="Search pages, actions…" oninput="filterCmd(this.value)" onkeydown="cmdKey(event)"><span class="cmd-kbd">ESC</span></div>
+    <div id="cmdItems" style="max-height:320px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<div class="modal-ov" id="userModal">
+  <div class="modal">
+    <div class="modal-hdr"><h2 id="umTitle">User Details</h2><button class="btn btn-icon btn-s" onclick="closeUserModal()">✕</button></div>
+    <div class="modal-body" id="umBody"></div>
+    <div class="modal-ftr"><button class="btn btn-s" onclick="closeUserModal()">Cancel</button><button class="btn btn-p" onclick="saveUser()">💾 Save</button></div>
+  </div>
+</div>
+
+<div class="modal-ov" id="addUserModal">
+  <div class="modal">
+    <div class="modal-hdr"><h2>➕ Add New User</h2><button class="btn btn-icon btn-s" onclick="closeModal('addUserModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="ig"><label class="ilbl">Full Name</label><input class="inp" id="nuName" placeholder="John Doe"></div>
+      <div class="ig"><label class="ilbl">Email</label><input class="inp" id="nuEmail" placeholder="john@example.com"></div>
+      <div class="ig"><label class="ilbl">Role</label><select class="sel" id="nuRole"><option>Admin</option><option>Editor</option><option>Viewer</option><option>Developer</option></select></div>
+      <div class="ig"><label class="ilbl">Department</label><input class="inp" id="nuDept" placeholder="Engineering"></div>
     </div>
+    <div class="modal-ftr"><button class="btn btn-s" onclick="closeModal('addUserModal')">Cancel</button><button class="btn btn-p" onclick="createUser()">✅ Create User</button></div>
+  </div>
+</div>
 
-    <ul class="nav-menu" role="menu">
-      <li class="nav-item active" data-section="dashboard" role="none">
-        <button class="nav-link" role="menuitem" aria-current="page">
-          <svg class="nav-icon" aria-hidden="true"><use href="#icon-dashboard"/></svg>
-          <span class="nav-label">Dashboard</span>
-        </button>
-      </li>
-      <li class="nav-item" data-section="users" role="none">
-        <button class="nav-link" role="menuitem">
-          <svg class="nav-icon" aria-hidden="true"><use href="#icon-users"/></svg>
-          <span class="nav-label">Users</span>
-        </button>
-      </li>
-      <li class="nav-item" data-section="analytics" role="none">
-        <button class="nav-link" role="menuitem">
-          <svg class="nav-icon" aria-hidden="true"><use href="#icon-analytics"/></svg>
-          <span class="nav-label">Analytics</span>
-        </button>
-      </li>
-      <li class="nav-item" data-section="security" role="none">
-        <button class="nav-link" role="menuitem">
-          <svg class="nav-icon" aria-hidden="true"><use href="#icon-shield"/></svg>
-          <span class="nav-label">Security</span>
-        </button>
-      </li>
-      <li class="nav-item" data-section="settings" role="none">
-        <button class="nav-link" role="menuitem">
-          <svg class="nav-icon" aria-hidden="true"><use href="#icon-settings"/></svg>
-          <span class="nav-label">Settings</span>
-        </button>
-      </li>
-    </ul>
+<div class="modal-ov" id="orderModal">
+  <div class="modal">
+    <div class="modal-hdr"><h2 id="omTitle">Order Details</h2><button class="btn btn-icon btn-s" onclick="closeModal('orderModal')">✕</button></div>
+    <div class="modal-body" id="omBody"></div>
+    <div class="modal-ftr"><button class="btn btn-s" onclick="closeModal('orderModal')">Close</button><button class="btn btn-p" onclick="showToast('success','Updated!','Order status updated');closeModal('orderModal')">Update Status</button></div>
+  </div>
+</div>
 
-    <button class="sidebar-collapse-btn" aria-label="Toggle sidebar" aria-expanded="true">
-      <svg aria-hidden="true"><use href="#icon-chevron-left"/></svg>
-    </button>
+<div class="tc" id="tc"></div>
+
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">NexusAdmin</span>
+      <span class="logo-badge">PRO</span>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Menu</div>
+      <div class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></div>
+      <div class="nav-item" onclick="nav('analytics')" id="nav-analytics"><span class="nav-icon">📈</span><span class="nav-label">Analytics</span></div>
+      <div class="nav-item" onclick="nav('users')" id="nav-users"><span class="nav-icon">👥</span><span class="nav-label">Users</span><span class="nav-badge" id="usrBadge">45</span></div>
+      <div class="nav-item" onclick="nav('content')" id="nav-content"><span class="nav-icon">📝</span><span class="nav-label">Content</span></div>
+      <div class="nav-item" onclick="nav('orders')" id="nav-orders"><span class="nav-icon">🛒</span><span class="nav-label">Orders</span><span class="nav-badge">12</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">System</div>
+      <div class="nav-item" onclick="nav('security')" id="nav-security"><span class="nav-icon">🔒</span><span class="nav-label">Security</span><span class="nav-badge" id="thrBadge">3</span></div>
+      <div class="nav-item" onclick="nav('logs')" id="nav-logs"><span class="nav-icon">📋</span><span class="nav-label">Logs</span></div>
+      <div class="nav-item" onclick="nav('settings')" id="nav-settings"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="nav('settings')">
+        <div class="uav">A</div>
+        <div class="uinfo"><div class="uname">Alex Johnson</div><div class="urole">Super Admin</div></div>
+        <div class="udot"></div>
+      </div>
+    </div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="main-content" id="main-content">
-
-    <!-- Top Header -->
-    <header class="top-header">
-      <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
-        <svg aria-hidden="true"><use href="#icon-menu"/></svg>
-      </button>
-
-      <!-- h1.header-title injected by JS -->
-
-      <div class="header-actions">
-        <!-- Privacy Toggle -->
-        <button class="privacy-toggle" id="privacyToggle" aria-label="Toggle privacy mode" aria-pressed="false">
-          <svg aria-hidden="true"><use href="#icon-eye-off"/></svg>
-          <span class="toggle-label">Privacy</span>
-        </button>
-
-        <!-- Notifications -->
-        <div class="notification-trigger">
-          <button class="icon-button" id="notificationBtn" aria-label="Notifications" aria-expanded="false">
-            <svg aria-hidden="true"><use href="#icon-bell"/></svg>
-            <span class="notification-badge" id="notificationBadge" aria-label="3 unread notifications">3</span>
-          </button>
-        </div>
-
-        <!-- Theme Toggle -->
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <svg aria-hidden="true"><use href="#icon-sun"/></svg>
-        </button>
+  <div class="main">
+    <header class="topbar">
+      <button class="mob-toggle" onclick="toggleMob()">☰</button>
+      <div class="tbar-title" id="tbarTitle">Dashboard</div>
+      <div class="search-box" onclick="openCmd()"><span>🔍</span><span class="search-hint">Search or ⌘K…</span></div>
+      <div class="tbar-actions">
+        <button class="icon-btn" title="Command Palette" onclick="openCmd()">⌘</button>
+        <button class="icon-btn" title="Notifications" onclick="toggleNotif()" id="notifBtn">🔔<span class="ndot" id="ndot"></span></button>
+        <button class="icon-btn" title="Toggle Theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        <button class="icon-btn" title="Refresh" onclick="refreshData()">🔄</button>
       </div>
     </header>
 
-    <!-- ─── Dashboard View ──────────────────────────────────────────────────── -->
-    <section class="view-section active" id="dashboard-view" aria-labelledby="dashboard-title">
-      <h2 id="dashboard-title" class="view-title">
-        Dashboard
-        <span class="view-subtitle">Overview &amp; live metrics</span>
-      </h2>
-
-      <!-- Metrics Grid -->
-      <div class="metrics-grid" id="metricsGrid">
-        <!-- Populated by Dashboard.js -->
-      </div>
-
-      <!-- Charts + Activity -->
-      <div class="dashboard-grid">
-        <div class="analytics-widget glass-effect" id="analyticsWidget">
-          <!-- Populated by Dashboard.js -->
-        </div>
-
-        <div class="activity-monitor glass-effect" id="activityMonitor">
-          <div class="widget-header">
-            <h3>Live Activity</h3>
-            <span class="table-badge" style="background:rgba(16,185,129,0.15);color:var(--color-success);font-size:10px;animation:pulse 2s infinite">● LIVE</span>
-          </div>
-          <ul class="activity-feed" id="activityFeed">
-            <!-- Populated by ActivityMonitor.js -->
-          </ul>
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-hdr">
+        <div><div class="page-title">Dashboard</div><div class="page-sub">Welcome back, Alex 👋 Here's what's happening</div></div>
+        <div class="flex gap2">
+          <select class="sel" style="width:auto;padding:8px 12px" id="periodSel" onchange="changePeriod(this.value)">
+            <option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option>
+          </select>
+          <button class="btn btn-p" onclick="exportReport()">📥 Export</button>
         </div>
       </div>
-    </section>
-
-    <!-- ─── Users View ──────────────────────────────────────────────────────── -->
-    <section class="view-section" id="users-view" aria-labelledby="users-title">
-      <h2 id="users-title" class="view-title">User Management</h2>
-
-      <div class="table-controls">
-        <div class="search-wrapper">
-          <svg class="search-icon" aria-hidden="true"><use href="#icon-search"/></svg>
-          <input type="search" class="search-input" id="userSearch" placeholder="Search by email, ID, role…" aria-label="Search users">
-        </div>
-        <div class="filter-buttons" role="group" aria-label="Filter by status">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="active">Active</button>
-          <button class="filter-btn" data-filter="inactive">Inactive</button>
-          <button class="filter-btn" data-filter="suspended">Suspended</button>
-        </div>
-      </div>
-
-      <div class="table-wrapper glass-effect">
-        <table class="user-table" id="userTable" aria-label="Users table">
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Email</th>
-              <th scope="col">Role</th>
-              <th scope="col">Status</th>
-              <th scope="col">Last Activity</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody">
-            <!-- Populated by UserManager.js -->
-          </tbody>
-        </table>
-      </div>
-
-      <div class="user-detail-panel glass-effect" id="userDetailPanel" hidden>
-        <!-- Populated by UserManager.js -->
-      </div>
-    </section>
-
-    <!-- ─── Analytics View ─────────────────────────────────────────────────── -->
-    <section class="view-section" id="analytics-view" aria-labelledby="analytics-title">
-      <!-- Populated by Analytics.js -->
-      <h2 id="analytics-title" class="view-title">Analytics</h2>
-      <div class="glass-effect" style="padding:var(--space-8);text-align:center;color:var(--color-text-tertiary)">
-        Loading analytics…
-      </div>
-    </section>
-
-    <!-- ─── Security View ──────────────────────────────────────────────────── -->
-    <section class="view-section" id="security-view" aria-labelledby="security-title">
-      <h2 id="security-title" class="view-title">Security Center</h2>
-
-      <div class="security-status glass-effect" id="securityStatus" data-status="secure">
-        <svg class="status-icon" width="48" height="48" aria-hidden="true" style="fill:var(--color-success);margin-bottom:var(--space-4)">
-          <use href="#icon-shield-check"/>
-        </svg>
-        <h3 style="margin:0 0 var(--space-2);font-size:var(--text-2xl)">
-          System Status: <span class="status-text" style="color:var(--color-success)">Secure</span>
-        </h3>
-        <p class="status-description" style="margin:0;color:var(--color-text-secondary)">All systems operational</p>
-      </div>
-
-      <div class="security-grid">
-        <div class="security-events glass-effect">
-          <h3 style="margin:0 0 var(--space-4);font-size:var(--text-lg);font-weight:600;color:var(--color-text-primary)">
-            Recent Security Events
-          </h3>
-          <ul class="event-list" id="securityEventList" style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:var(--space-3)">
-            <!-- Populated by SecurityCenter.js -->
-          </ul>
-        </div>
-
-        <div class="security-controls glass-effect">
-          <h3 style="margin:0 0 var(--space-4);font-size:var(--text-lg);font-weight:600;color:var(--color-text-primary)">
-            Security Settings
-          </h3>
-          <div style="display:flex;flex-direction:column;gap:0">
-            <div class="control-item" style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--glass-border)">
-              <div>
-                <p style="margin:0;font-weight:500;color:var(--color-text-primary);font-size:var(--text-sm)">Two-Factor Authentication</p>
-                <p style="margin:2px 0 0;font-size:var(--text-xs);color:var(--color-text-tertiary)">Require 2FA for all admin accounts</p>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="twoFactorAuth" class="security-toggle-input" checked>
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div class="control-item" style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--glass-border)">
-              <div>
-                <p style="margin:0;font-weight:500;color:var(--color-text-primary);font-size:var(--text-sm)">IP Allowlist</p>
-                <p style="margin:2px 0 0;font-size:var(--text-xs);color:var(--color-text-tertiary)">Restrict access to trusted IPs only</p>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="ipAllowlist" class="security-toggle-input">
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div class="control-item" style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) 0">
-              <div>
-                <p style="margin:0;font-weight:500;color:var(--color-text-primary);font-size:var(--text-sm)">Audit Logging</p>
-                <p style="margin:2px 0 0;font-size:var(--text-xs);color:var(--color-text-tertiary)">Log all admin actions</p>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="auditLog" class="security-toggle-input" checked>
-                <span class="slider round"></span>
-              </label>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="g75 mb4">
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Revenue Overview</span>
+            <div class="flex gap2">
+              <button class="btn btn-sm" id="cBtn-revenue" onclick="switchChart('revenue')" style="background:var(--acc);color:#fff;border:none">Revenue</button>
+              <button class="btn btn-sm btn-s" id="cBtn-users" onclick="switchChart('users')">Users</button>
+              <button class="btn btn-sm btn-s" id="cBtn-orders" onclick="switchChart('orders')">Orders</button>
             </div>
           </div>
+          <div class="card-body"><div style="height:240px"><canvas id="mainChart"></canvas></div></div>
         </div>
-
-        <div class="active-sessions glass-effect" style="grid-column:1 / -1">
-          <h3 style="margin:0 0 var(--space-4);font-size:var(--text-lg);font-weight:600;color:var(--color-text-primary)">
-            Active Sessions
-          </h3>
-          <ul class="session-list" id="sessionList" style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:var(--space-3)">
-            <!-- Populated by SecurityCenter.js -->
-          </ul>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Traffic Sources</span></div>
+          <div class="card-body" style="display:flex;align-items:center;gap:20px">
+            <div style="width:140px;height:140px;flex-shrink:0"><canvas id="donutChart"></canvas></div>
+            <div style="flex:1" id="trafficLeg"></div>
+          </div>
         </div>
       </div>
-    </section>
-
-    <!-- ─── Settings View ─────────────────────────────────────────────────── -->
-    <section class="view-section" id="settings-view" aria-labelledby="settings-title">
-      <!-- Populated by Settings.js -->
-    </section>
-
-    <!-- Notification Dropdown -->
-    <div class="notification-dropdown glass-effect" id="notificationDropdown" hidden role="dialog" aria-label="Notifications">
-      <header class="dropdown-header">
-        <h3>Notifications</h3>
-        <button class="text-button" id="markAllRead">Mark all read</button>
-      </header>
-      <ul class="notification-list" id="notificationList" role="list">
-        <!-- Populated by NotificationCenter.js -->
-      </ul>
+      <div class="g75">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">🔴 Live Activity</span><span class="badge bg">● Live</span></div>
+          <div class="card-body" style="padding-top:8px" id="actFeed"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">📅 Calendar</span></div>
+            <div class="card-body" id="miniCal"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">🌍 Top Regions</span></div>
+            <div class="card-body" id="topRegions"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Demo Badge -->
-    <div class="demo-badge" aria-label="Demo version indicator" role="note">DEMO</div>
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="page-hdr">
+        <div><div class="page-title">Analytics</div><div class="page-sub">Deep dive into your metrics and performance</div></div>
+        <button class="btn btn-p" onclick="exportReport()">📥 Export CSV</button>
+      </div>
+      <div class="g2 mb4">
+        <div class="card"><div class="card-hdr"><span class="card-title">Weekly Sessions</span></div><div class="card-body"><div style="height:200px"><canvas id="sessChart"></canvas></div></div></div>
+        <div class="card"><div class="card-hdr"><span class="card-title">Conversion Funnel</span></div><div class="card-body"><div style="height:200px"><canvas id="funnelChart"></canvas></div></div></div>
+      </div>
+      <div class="g75">
+        <div class="card"><div class="card-hdr"><span class="card-title">Top Pages</span></div><div class="card-body" id="topPages"></div></div>
+        <div class="card"><div class="card-hdr"><span class="card-title">Device Breakdown</span></div><div class="card-body" id="deviceBrkdn"></div></div>
+      </div>
+    </div>
 
-  </main>
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="page-hdr">
+        <div><div class="page-title">User Management</div><div class="page-sub" id="usersSub">45 total users</div></div>
+        <div class="flex gap2">
+          <button class="btn btn-s" onclick="exportUsers()">📥 Export</button>
+          <button class="btn btn-p" onclick="openModal('addUserModal')">➕ Add User</button>
+        </div>
+      </div>
+      <div class="card mb4">
+        <div class="card-body" style="padding:12px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <input class="inp" style="width:230px" placeholder="🔍 Search users…" oninput="filterUsers()" id="usrSearch">
+          <select class="sel" style="width:130px" id="usrStatusF" onchange="filterUsers()"><option value="all">All Status</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="suspended">Suspended</option></select>
+          <select class="sel" style="width:130px" id="usrRoleF" onchange="filterUsers()"><option value="all">All Roles</option><option value="Admin">Admin</option><option value="Editor">Editor</option><option value="Viewer">Viewer</option><option value="Developer">Developer</option></select>
+          <span class="tsm tmuted" id="usrCount">Showing all 45</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap"><table><thead><tr><th><input type="checkbox" id="selAll" onchange="selAllUsers(this.checked)"></th><th onclick="sortUsers('name')" style="cursor:pointer">NAME ↕</th><th>ROLE</th><th>DEPT</th><th>STATUS</th><th onclick="sortUsers('joined')" style="cursor:pointer">JOINED ↕</th><th>ACTIONS</th></tr></thead><tbody id="usrsTable"></tbody></table></div>
+        <div style="padding:12px 16px;border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between">
+          <span class="tsm tmuted" id="pgInfo">Page 1 of 5</span>
+          <div class="flex gap2" id="pgBtns"></div>
+        </div>
+      </div>
+    </div>
 
-  <!-- App entry point (ES modules) -->
-  <script type="module" src="scripts/main.js"></script>
+    <!-- CONTENT -->
+    <div class="page" id="page-content">
+      <div class="page-hdr">
+        <div><div class="page-title">Content Management</div><div class="page-sub">Manage posts, pages, and media</div></div>
+        <button class="btn btn-p" onclick="showToast('success','Editor opened!','Creating a new post')">✏️ New Post</button>
+      </div>
+      <div class="g3 mb4" id="contentStats"></div>
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">Recent Posts</span>
+          <div class="flex gap2">
+            <input class="inp" style="width:200px" placeholder="🔍 Search…" oninput="filterContent(this.value)" id="contentSearch">
+            <select class="sel" style="width:130px" onchange="filterContentType(this.value)"><option value="all">All Types</option><option value="Article">Article</option><option value="Tutorial">Tutorial</option><option value="News">News</option></select>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>TITLE</th><th>TYPE</th><th>STATUS</th><th>VIEWS</th><th>DATE</th><th>ACTIONS</th></tr></thead><tbody id="contentTable"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+      <div class="page-hdr">
+        <div><div class="page-title">Orders</div><div class="page-sub">Track and manage customer orders</div></div>
+        <button class="btn btn-p" onclick="exportReport()">📥 Export Orders</button>
+      </div>
+      <div class="stats-grid" id="orderStats"></div>
+      <div class="card mb4">
+        <div class="card-body" style="padding:12px 16px;display:flex;gap:12px;flex-wrap:wrap">
+          <input class="inp" style="width:230px" placeholder="🔍 Search orders…" oninput="filterOrders()" id="ordSearch">
+          <select class="sel" style="width:150px" id="ordStatusF" onchange="filterOrders()"><option value="all">All Status</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap"><table><thead><tr><th>ORDER ID</th><th>CUSTOMER</th><th>PRODUCT</th><th>TOTAL</th><th>STATUS</th><th>DATE</th><th>ACTIONS</th></tr></thead><tbody id="ordsTable"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SECURITY -->
+    <div class="page" id="page-security">
+      <div class="page-hdr">
+        <div><div class="page-title">Security Center</div><div class="page-sub">Monitor threats and system health</div></div>
+        <button class="btn btn-d" onclick="runScan()">🔍 Run Scan</button>
+      </div>
+      <div class="g3 mb4">
+        <div class="card" style="text-align:center;padding:24px 16px">
+          <div style="display:flex;justify-content:center;margin-bottom:12px">
+            <div class="sr-ring">
+              <svg viewBox="0 0 120 120" width="120" height="120"><circle class="sr-bg" cx="60" cy="60" r="54"/><circle class="sr-fg" id="srCircle" cx="60" cy="60" r="54"/></svg>
+              <div class="sr-val"><span class="sr-num" id="srNum">84</span><span class="sr-lbl">/ 100</span></div>
+            </div>
+          </div>
+          <div style="font-weight:700;color:var(--grn)" id="srLbl">Good</div>
+          <div class="tsm tmuted">Security Score</div>
+        </div>
+        <div class="card" style="grid-column:span 2">
+          <div class="card-hdr"><span class="card-title">⚡ Active Threats</span></div>
+          <div class="card-body" style="padding-top:8px" id="threatsList"></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">🔑 Active Sessions</span><span class="tsm tmuted" id="sessCnt">6 active</span></div>
+          <div class="card-body" style="padding-top:8px" id="sessListEl"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">📊 Login Attempts</span></div>
+          <div class="card-body"><div style="height:200px"><canvas id="loginChart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="page" id="page-logs">
+      <div class="page-hdr">
+        <div><div class="page-title">System Logs</div><div class="page-sub">Real-time system activity</div></div>
+        <div class="flex gap2">
+          <button class="btn btn-s" onclick="clearLogs()">🗑 Clear</button>
+          <button class="btn btn-p" onclick="exportLogs()">📥 Download</button>
+        </div>
+      </div>
+      <div class="card mb4">
+        <div class="card-body" style="padding:12px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <select class="sel" style="width:130px" id="logLvl" onchange="renderLogs()"><option value="all">All Levels</option><option value="info">Info</option><option value="warning">Warning</option><option value="error">Error</option><option value="debug">Debug</option></select>
+          <select class="sel" style="width:150px" id="logSrc" onchange="renderLogs()"><option value="all">All Sources</option><option value="auth">Auth</option><option value="api">API</option><option value="db">Database</option><option value="system">System</option></select>
+          <input class="inp" style="width:220px" placeholder="🔍 Search logs…" id="logSearch" oninput="renderLogs()">
+          <label class="flex items-c gap2 tsm" style="cursor:pointer"><input type="checkbox" id="autoScroll" checked> Auto-scroll</label>
+        </div>
+      </div>
+      <div class="card">
+        <div id="logsEl" style="height:480px;overflow-y:auto;font-family:monospace;font-size:12px;padding:12px"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-hdr">
+        <div><div class="page-title">Settings</div><div class="page-sub">Manage preferences and account</div></div>
+        <button class="btn btn-p" onclick="saveSettings()">💾 Save All</button>
+      </div>
+      <div class="stabs">
+        <div class="stab active" onclick="switchStab('general')">⚙️ General</div>
+        <div class="stab" onclick="switchStab('appearance')">🎨 Appearance</div>
+        <div class="stab" onclick="switchStab('notifications')">🔔 Notifications</div>
+        <div class="stab" onclick="switchStab('security')">🔒 Security</div>
+        <div class="stab" onclick="switchStab('api')">🔌 API</div>
+      </div>
+      <div class="ssec active" id="ss-general">
+        <div class="card mb4"><div class="card-hdr"><span class="card-title">Profile</span></div><div class="card-body"><div class="g2"><div class="ig"><label class="ilbl">First Name</label><input class="inp" value="Alex"></div><div class="ig"><label class="ilbl">Last Name</label><input class="inp" value="Johnson"></div><div class="ig"><label class="ilbl">Email</label><input class="inp" value="alex@nexus.io"></div><div class="ig"><label class="ilbl">Phone</label><input class="inp" value="+1 (555) 000-0000"></div></div><div class="ig"><label class="ilbl">Bio</label><textarea class="inp" rows="2" style="resize:vertical">Senior administrator with 5+ years of experience.</textarea></div></div></div>
+        <div class="card"><div class="card-hdr"><span class="card-title">Preferences</span></div><div class="card-body"><div class="srow"><div class="sinfo"><div class="stitle">Language</div></div><select class="sel" style="width:160px"><option>English (US)</option><option>Russian</option><option>Spanish</option></select></div><div class="srow"><div class="sinfo"><div class="stitle">Timezone</div></div><select class="sel" style="width:200px"><option>UTC+2 (Kyiv)</option><option>UTC+0 (London)</option><option>UTC-5 (New York)</option></select></div><div class="srow"><div class="sinfo"><div class="stitle">Date Format</div></div><select class="sel" style="width:160px"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select></div></div></div>
+      </div>
+      <div class="ssec" id="ss-appearance">
+        <div class="card mb4"><div class="card-hdr"><span class="card-title">Theme</span></div><div class="card-body"><div class="srow"><div class="sinfo"><div class="stitle">Dark Mode</div><div class="sdesc">Switch between dark and light</div></div><div class="toggle" id="thToggle" onclick="toggleTheme();this.classList.toggle('on')"></div></div><div class="srow"><div class="sinfo"><div class="stitle">Compact Mode</div></div><div class="toggle" onclick="this.classList.toggle('on');showToast('info','Compact','Applied')"></div></div><div class="srow"><div class="sinfo"><div class="stitle">Animations</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div></div>
+        <div class="card"><div class="card-hdr"><span class="card-title">Accent Color</span></div><div class="card-body"><div class="flex gap3" style="flex-wrap:wrap"><div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);cursor:pointer;border:3px solid white" onclick="setAccent('#6366f1','#8b5cf6')"></div><div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);cursor:pointer" onclick="setAccent('#10b981','#059669')"></div><div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);cursor:pointer" onclick="setAccent('#3b82f6','#1d4ed8')"></div><div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#d97706);cursor:pointer" onclick="setAccent('#f59e0b','#d97706')"></div><div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ec4899,#be185d);cursor:pointer" onclick="setAccent('#ec4899','#be185d')"></div></div></div></div>
+      </div>
+      <div class="ssec" id="ss-notifications">
+        <div class="card"><div class="card-hdr"><span class="card-title">Notification Preferences</span></div><div class="card-body"><div class="srow"><div class="sinfo"><div class="stitle">Email Notifications</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div><div class="srow"><div class="sinfo"><div class="stitle">Security Alerts</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div><div class="srow"><div class="sinfo"><div class="stitle">New User Registrations</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div><div class="srow"><div class="sinfo"><div class="stitle">Weekly Reports</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div><div class="srow"><div class="sinfo"><div class="stitle">Order Updates</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div></div>
+      </div>
+      <div class="ssec" id="ss-security">
+        <div class="card mb4"><div class="card-hdr"><span class="card-title">Password</span></div><div class="card-body"><div class="g2"><div class="ig"><label class="ilbl">Current Password</label><input class="inp" type="password" placeholder="••••••••"></div><div class="ig"><label class="ilbl">New Password</label><input class="inp" type="password" placeholder="••••••••"></div></div><button class="btn btn-p" onclick="showToast('success','Password updated!','Changed successfully')">Update Password</button></div></div>
+        <div class="card"><div class="card-hdr"><span class="card-title">Two-Factor Authentication</span></div><div class="card-body"><div class="srow"><div class="sinfo"><div class="stitle">Authenticator App</div></div><div class="toggle" onclick="this.classList.toggle('on');showToast('info','2FA Setup','Check your email')"></div></div><div class="srow"><div class="sinfo"><div class="stitle">SMS Verification</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div></div></div>
+      </div>
+      <div class="ssec" id="ss-api">
+        <div class="card"><div class="card-hdr"><span class="card-title">API Keys</span><button class="btn btn-sm btn-p" onclick="generateApiKey()">+ New Key</button></div><div class="card-body" id="apiKeys"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// =====================================================
+// DATA
+// =====================================================
+const NAMES=['Alice Chen','Bob Martinez','Carol White','David Kim','Elena Ruiz','Frank Weber','Grace Liu','Henry Park','Isabella Torres','James Brown','Kate Wilson','Liam Davis','Maya Patel','Noah Garcia','Olivia Scott','Paul Zhang','Quinn Taylor','Rachel Lee','Sam Johnson','Tina Morris','Uma Sharma','Victor Reyes','Wendy Clark','Xavier Hall','Yuki Tanaka','Zoe Adams','Aaron Blake','Bella Foster','Carlos Rivera','Diana Moore','Ethan Hunt','Fiona Green','George Lee','Hannah Kim','Ivan Petrov','Julia Roberts','Kevin Chen','Laura Martinez','Mike Wilson','Nina Patel'];
+const LOCS=['New York, US','London, UK','Tokyo, JP','Paris, FR','Berlin, DE','Sydney, AU','Toronto, CA','Seoul, KR','São Paulo, BR','Dubai, AE','Amsterdam, NL','Singapore, SG','Vienna, AT','Kyiv, UA','Warsaw, PL'];
+const ROLES=['Admin','Editor','Viewer','Developer','Analyst'];
+const DEPTS=['Engineering','Marketing','Design','Sales','Support','Finance','HR','Operations'];
+const AVCLRS=['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#3b82f6','#ec4899','#14b8a6','#f97316','#84cc16'];
+const PRODS=['Pro Subscription','Enterprise License','API Credits','Support Package','Training Course','Plugin Bundle','Storage Upgrade','Analytics Add-on'];
+const PAGES_=['/dashboard','/users','/analytics','/products','/blog','/settings','/api/v1','/checkout','/profile','/reports'];
+const CTYPES=['Article','Tutorial','News','Guide','Case Study'];
+const ORDS_STATUS=['pending','processing','shipped','delivered','cancelled'];
+const LOG_SOURCES=['auth','api','db','system'];
+const LOG_MSGS={
+  auth:['User login successful','Failed login attempt','Password changed','2FA verified','Session expired','New API key created'],
+  api:['GET /api/users 200','POST /api/orders 201','DELETE /api/session 200','PUT /api/user/42 200','GET /api/analytics 200','Rate limit exceeded for IP'],
+  db:['Query executed in 12ms','Connection pool: 8/20 used','Index rebuild completed','Backup completed successfully','Cache invalidated','Slow query detected: 2.3s'],
+  system:['Server CPU: 34%','Memory usage: 2.1GB/8GB','Disk I/O: normal','Cron job executed','Config reloaded','Health check passed']
+};
+
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(a){return a[rnd(0,a.length-1)]}
+function fmtN(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':n.toString()}
+function fmtDate(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
+function timeAgo(d){const s=Math.floor((Date.now()-d)/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
+
+// Generate Users
+const allUsers=Array.from({length:45},(_,i)=>{
+  const name=NAMES[i]||`User ${i+1}`;
+  const status=rnd(0,10)>2?rnd(0,10)>1?'active':'inactive':'suspended';
+  return{id:i+1,name,email:name.toLowerCase().replace(' ','.')+`@example.com`,role:pick(ROLES),dept:pick(DEPTS),status,loc:pick(LOCS),joined:new Date(Date.now()-rnd(0,730)*864e5),lastActive:new Date(Date.now()-rnd(0,30)*864e5),color:AVCLRS[i%AVCLRS.length],initials:name.split(' ').map(w=>w[0]).join('')};
+});
+
+// Generate Orders
+const allOrders=Array.from({length:80},(_,i)=>{
+  const u=pick(allUsers);
+  return{id:`ORD-${1000+i}`,customer:u.name,email:u.email,product:pick(PRODS),qty:rnd(1,5),price:rnd(29,499),status:pick(ORDS_STATUS),date:new Date(Date.now()-rnd(0,90)*864e5),color:u.color,initials:u.initials};
+});
+
+// Generate Logs
+const allLogs=Array.from({length:200},(_,i)=>{
+  const src=pick(LOG_SOURCES);
+  const lvl=rnd(0,10)>7?rnd(0,3)>2?'error':'warning':rnd(0,3)>2?'debug':'info';
+  return{id:i,ts:new Date(Date.now()-i*rnd(10,120)*1000),level:lvl,source:src,msg:pick(LOG_MSGS[src])};
+});
+
+// Generate Notifications
+const allNotifs=[
+  {id:1,icon:'🚨',title:'Security Alert',desc:'Suspicious login attempt from unknown IP 192.168.1.100',time:new Date(Date.now()-300000),type:'error',unread:true},
+  {id:2,icon:'👤',title:'New User Registered',desc:'David Kim joined as Developer',time:new Date(Date.now()-900000),type:'info',unread:true},
+  {id:3,icon:'🛒',title:'New Order',desc:'Enterprise License purchased — $499.00',time:new Date(Date.now()-1800000),type:'success',unread:true},
+  {id:4,icon:'📊',title:'Weekly Report Ready',desc:'Your analytics report for last week is available',time:new Date(Date.now()-7200000),type:'info',unread:false},
+  {id:5,icon:'⚠️',title:'Server Warning',desc:'CPU usage reached 85% on server node 3',time:new Date(Date.now()-14400000),type:'warning',unread:false},
+  {id:6,icon:'✅',title:'Backup Completed',desc:'Daily backup finished successfully',time:new Date(Date.now()-86400000),type:'success',unread:false},
+  {id:7,icon:'🔑',title:'API Key Expiring',desc:'Your API key expires in 7 days',time:new Date(Date.now()-172800000),type:'warning',unread:false},
+];
+
+const allContent=Array.from({length:20},(_,i)=>({
+  id:i+1,title:`${pick(['How to','Guide to','Introduction to','Advanced','Building'])} ${pick(['React','Vue','TypeScript','Node.js','REST APIs','GraphQL','Docker','Kubernetes'])}`,
+  type:pick(CTYPES),status:pick(['published','draft','review']),views:rnd(100,50000),date:new Date(Date.now()-rnd(0,180)*864e5),author:pick(NAMES)
+}));
+
+// STATE
+const S={
+  theme:localStorage.getItem('nxTheme')||'dark',
+  page:'dashboard',
+  chartMode:'revenue',
+  usrPage:1,usrPerPage:10,usrSort:'name',usrDir:1,
+  usrFilters:{search:'',status:'all',role:'all'},
+  ordFilters:{search:'',status:'all'},
+  contentFilters:{search:'',type:'all'},
+  notifs:[...allNotifs],
+  logs:[...allLogs],
+  users:[...allUsers],
+  orders:[...allOrders],
+  charts:{},
+};
+
+// =====================================================
+// THEME
+// =====================================================
+function initTheme(){
+  document.documentElement.setAttribute('data-theme',S.theme);
+  const btn=document.getElementById('themeBtn');
+  if(btn)btn.textContent=S.theme==='dark'?'🌙':'☀️';
+  const tog=document.getElementById('thToggle');
+  if(tog)tog.classList.toggle('on',S.theme==='dark');
+}
+function toggleTheme(){
+  S.theme=S.theme==='dark'?'light':'dark';
+  localStorage.setItem('nxTheme',S.theme);
+  initTheme();
+  showToast('info',S.theme==='dark'?'Dark mode on':'Light mode on','Theme changed');
+}
+function setAccent(c1,c2){
+  document.documentElement.style.setProperty('--acc',c1);
+  document.documentElement.style.setProperty('--pur',c2);
+  document.documentElement.style.setProperty('--accg',c1+'4d');
+  showToast('success','Accent updated!','Color applied');
+}
+
+// =====================================================
+// NAVIGATION
+// =====================================================
+const PAGE_TITLES={dashboard:'Dashboard',analytics:'Analytics',users:'User Management',content:'Content',orders:'Orders',security:'Security',logs:'System Logs',settings:'Settings'};
+function nav(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  const ni=document.getElementById('nav-'+id);
+  if(pg)pg.classList.add('active');
+  if(ni)ni.classList.add('active');
+  document.getElementById('tbarTitle').textContent=PAGE_TITLES[id]||id;
+  S.page=id;
+  if(id==='analytics')renderAnalytics();
+  if(id==='security')renderSecurity();
+  if(id==='logs'){renderLogs();startLogFeed();}
+  if(id==='content')renderContent();
+  if(id==='orders')renderOrders();
+  if(id==='users')renderUsers();
+  if(id==='settings')renderApiKeys();
+  closeMob();
+}
+
+// =====================================================
+// MOBILE
+// =====================================================
+function toggleMob(){
+  document.getElementById('sidebar').classList.toggle('mob-open');
+  document.getElementById('sbOv').classList.toggle('vis');
+}
+function closeMob(){
+  document.getElementById('sidebar').classList.remove('mob-open');
+  document.getElementById('sbOv').classList.remove('vis');
+}
+
+// =====================================================
+// STATS GRID
+// =====================================================
+const STATS=[
+  {label:'Total Users',val:1284,chg:'+12.5%',up:true,icon:'👥',c1:'#6366f1',c2:'#8b5cf6',bg:'rgba(99,102,241,.15)'},
+  {label:'Monthly Revenue',val:'$48,920',chg:'+8.3%',up:true,icon:'💰',c1:'#10b981',c2:'#059669',bg:'rgba(16,185,129,.15)'},
+  {label:'Active Sessions',val:847,chg:'-3.2%',up:false,icon:'🌐',c1:'#3b82f6',c2:'#1d4ed8',bg:'rgba(59,130,246,.15)'},
+  {label:'Open Orders',val:156,chg:'+21.7%',up:true,icon:'🛒',c1:'#f59e0b',c2:'#d97706',bg:'rgba(245,158,11,.15)'},
+];
+function renderStats(){
+  document.getElementById('statsGrid').innerHTML=STATS.map(s=>`
+    <div class="stat-card" onclick="showToast('info','${s.label}','Viewing details for ${s.label}')" style="--card-gradient:linear-gradient(90deg,${s.c1},${s.c2})">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${s.c1},${s.c2})"></div>
+      <div class="stat-top">
+        <div class="stat-icon" style="background:${s.bg}">${s.icon}</div>
+        <span class="stat-chg ${s.up?'up':'dn'}">${s.up?'↑':'↓'} ${s.chg}</span>
+      </div>
+      <div class="stat-val">${typeof s.val==='number'?fmtN(s.val):s.val}</div>
+      <div class="stat-lbl">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// CHARTS
+// =====================================================
+function mkGrad(ctx,c1,c2){
+  const g=ctx.createLinearGradient(0,0,0,300);
+  g.addColorStop(0,c1);g.addColorStop(1,c2);return g;
+}
+
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function getMainData(){
+  if(S.chartMode==='revenue')return{labels:MONTHS,data:MONTHS.map(()=>rnd(20000,80000)),label:'Revenue ($)',c:'#6366f1'};
+  if(S.chartMode==='users')return{labels:MONTHS,data:MONTHS.map(()=>rnd(50,300)),label:'New Users',c:'#10b981'};
+  return{labels:MONTHS,data:MONTHS.map(()=>rnd(100,600)),label:'Orders',c:'#f59e0b'};
+}
+
+function renderMainChart(){
+  const canvas=document.getElementById('mainChart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  if(S.charts.main)S.charts.main.destroy();
+  const d=getMainData();
+  S.charts.main=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:d.labels,
+      datasets:[{label:d.label,data:d.data,borderColor:d.c,backgroundColor:ctx=>{const c=canvas.getContext('2d');const g=c.createLinearGradient(0,0,0,300);g.addColorStop(0,d.c+'66');g.addColorStop(1,d.c+'00');return g},fill:true,tension:.4,pointRadius:4,pointHoverRadius:7,borderWidth:2}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(15,22,41,.95)',borderColor:d.c,borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#94a3b8',padding:12}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#475569'}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#475569',callback:v=>S.chartMode==='revenue'?'$'+fmtN(v):fmtN(v)}}}}
+  });
+}
+
+function renderDonut(){
+  const canvas=document.getElementById('donutChart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  if(S.charts.donut)S.charts.donut.destroy();
+  const src=['Organic','Direct','Social','Referral','Email'];
+  const vals=[35,25,20,12,8];
+  const clrs=['#6366f1','#10b981','#f59e0b','#3b82f6','#ec4899'];
+  S.charts.donut=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:src,datasets:[{data:vals,backgroundColor:clrs,borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'75%',plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(15,22,41,.95)',titleColor:'#f1f5f9',bodyColor:'#94a3b8'}}}
+  });
+  const leg=document.getElementById('trafficLeg');
+  if(leg)leg.innerHTML=src.map((s,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:${clrs[i]};flex-shrink:0"></div><span style="font-size:12px;color:var(--t2)">${s}</span></div><span style="font-size:12px;font-weight:600">${vals[i]}%</span></div>`).join('');
+}
+
+function switchChart(mode){
+  S.chartMode=mode;
+  ['revenue','users','orders'].forEach(m=>{
+    const b=document.getElementById('cBtn-'+m);
+    if(b){b.className='btn btn-sm '+(m===mode?'':'btn-s');if(m===mode){b.style.background='var(--acc)';b.style.color='#fff';b.style.border='none';}else{b.style.background='';b.style.color='';b.style.border='';}}
+  });
+  renderMainChart();
+}
+
+function renderSessChart(){
+  const canvas=document.getElementById('sessChart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  if(S.charts.sess)S.charts.sess.destroy();
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  S.charts.sess=new Chart(ctx,{
+    type:'bar',
+    data:{labels:days,datasets:[{label:'Sessions',data:days.map(()=>rnd(200,900)),backgroundColor:'rgba(99,102,241,.7)',borderRadius:6,hoverBackgroundColor:'#6366f1'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#475569'}}}}
+  });
+}
+
+function renderFunnel(){
+  const canvas=document.getElementById('funnelChart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  if(S.charts.funnel)S.charts.funnel.destroy();
+  S.charts.funnel=new Chart(ctx,{
+    type:'bar',
+    data:{labels:['Visited','Signed Up','Activated','Purchased','Retained'],datasets:[{label:'Users',data:[10000,4200,2800,1400,980],backgroundColor:['#6366f1','#8b5cf6','#a78bfa','#c4b5fd','#ddd6fe'],borderRadius:6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{color:'#475569'}}}}
+  });
+}
+
+function renderLoginChart(){
+  const canvas=document.getElementById('loginChart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  if(S.charts.login)S.charts.login.destroy();
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  S.charts.login=new Chart(ctx,{
+    type:'bar',
+    data:{labels:days,datasets:[{label:'Success',data:days.map(()=>rnd(50,200)),backgroundColor:'rgba(16,185,129,.7)',borderRadius:4},{label:'Failed',data:days.map(()=>rnd(2,20)),backgroundColor:'rgba(239,68,68,.7)',borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#94a3b8',boxWidth:10,font:{size:11}}}},scales:{x:{grid:{display:false},ticks:{color:'#475569'},stacked:true},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#475569'},stacked:true}}}
+  });
+}
+
+// =====================================================
+// ACTIVITY FEED
+// =====================================================
+const ACT_TPLS=[
+  u=>`<strong>${u.name}</strong> logged in from ${u.loc}`,
+  u=>`<strong>${u.name}</strong> updated their profile`,
+  u=>`<strong>${u.name}</strong> created a new post`,
+  u=>`<strong>${u.name}</strong> placed an order for ${pick(PRODS)}`,
+  u=>`<strong>${u.name}</strong>'s session expired`,
+  u=>`New user <strong>${u.name}</strong> registered`,
+  u=>`<strong>${u.name}</strong> downloaded a report`,
+  u=>`<strong>${u.name}</strong> changed their password`,
+];
+const ACT_ICONS=['🔐','✏️','📝','🛒','⏱️','👤','📥','🔑'];
+let actItems=Array.from({length:8},(_,i)=>{
+  const u=pick(allUsers);
+  return{icon:ACT_ICONS[i%ACT_ICONS.length],text:ACT_TPLS[i%ACT_TPLS.length](u),time:new Date(Date.now()-i*rnd(60,600)*1000)};
+});
+
+function renderActivity(){
+  const el=document.getElementById('actFeed');
+  if(!el)return;
+  el.innerHTML=actItems.slice(0,8).map(a=>`
+    <div class="act-item">
+      <div class="act-av">${a.icon}</div>
+      <div class="act-body">
+        <div class="act-txt">${a.text}</div>
+        <div class="act-time">${timeAgo(a.time)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addActivity(){
+  const u=pick(allUsers);
+  const i=rnd(0,ACT_TPLS.length-1);
+  actItems.unshift({icon:ACT_ICONS[i],text:ACT_TPLS[i](u),time:new Date()});
+  actItems=actItems.slice(0,20);
+  if(S.page==='dashboard')renderActivity();
+}
+
+// =====================================================
+// CALENDAR
+// =====================================================
+function renderCalendar(){
+  const el=document.getElementById('miniCal');
+  if(!el)return;
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth();
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const dn=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const evDays=[3,8,12,15,22,27];
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:600">${now.toLocaleDateString('en',{month:'long',year:'numeric'})}</span><div class="flex gap1"><button class="btn btn-sm btn-s" style="padding:4px 8px">‹</button><button class="btn btn-sm btn-s" style="padding:4px 8px">›</button></div></div>`;
+  html+=`<div class="cal-grid">${dn.map(d=>`<div class="cal-dn">${d}</div>`).join('')}`;
+  for(let i=0;i<first;i++)html+=`<div class="cal-d other"></div>`;
+  for(let d=1;d<=days;d++){
+    const isToday=d===now.getDate();
+    const hasEv=evDays.includes(d);
+    html+=`<div class="cal-d${isToday?' today':''}${hasEv&&!isToday?' event':''}" onclick="showToast('info','${now.toLocaleDateString('en',{month:'short'})} ${d}','${hasEv?'Meeting scheduled':'No events'}')">${d}</div>`;
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// =====================================================
+// TOP REGIONS
+// =====================================================
+function renderRegions(){
+  const el=document.getElementById('topRegions');
+  if(!el)return;
+  const regions=[{flag:'🇺🇸',name:'United States',pct:34},{flag:'🇬🇧',name:'United Kingdom',pct:18},{flag:'🇩🇪',name:'Germany',pct:12},{flag:'🇯🇵',name:'Japan',pct:9},{flag:'🇺🇦',name:'Ukraine',pct:7}];
+  el.innerHTML=regions.map(r=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="font-size:18px">${r.flag}</span>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px">${r.name}</span><span style="font-size:12px;font-weight:600">${r.pct}%</span></div>
+        <div class="pb-wrap"><div class="pb" style="width:${r.pct}%;background:linear-gradient(90deg,var(--acc),var(--pur))"></div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// ANALYTICS
+// =====================================================
+function renderAnalytics(){
+  renderSessChart();
+  renderFunnel();
+  renderTopPages();
+  renderDevices();
+}
+
+function renderTopPages(){
+  const el=document.getElementById('topPages');
+  if(!el)return;
+  const pages=PAGES_.map(p=>({path:p,views:rnd(1000,50000),chg:(rnd(0,1)?'+':'-')+(rnd(1,30))+'%',up:rnd(0,1)}));
+  pages.sort((a,b)=>b.views-a.views);
+  el.innerHTML=pages.map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)">
+      <span style="font-size:12px;color:var(--tm);width:20px;text-align:center">${i+1}</span>
+      <span style="flex:1;font-size:13px;font-family:monospace;color:var(--accl)">${p.path}</span>
+      <div style="width:80px"><div class="pb-wrap"><div class="pb" style="width:${Math.round(p.views/500)}%;background:var(--acc)"></div></div></div>
+      <span style="font-size:13px;font-weight:600;width:60px;text-align:right">${fmtN(p.views)}</span>
+      <span style="font-size:11px;${p.up?'color:var(--grn)':'color:var(--red)'}">${p.chg}</span>
+    </div>
+  `).join('');
+}
+
+function renderDevices(){
+  const el=document.getElementById('deviceBrkdn');
+  if(!el)return;
+  const devs=[{icon:'💻',name:'Desktop',pct:58,clr:'#6366f1'},{icon:'📱',name:'Mobile',pct:34,clr:'#10b981'},{icon:'📱',name:'Tablet',pct:8,clr:'#f59e0b'}];
+  el.innerHTML=devs.map(d=>`
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px"><span>${d.icon}</span><span style="font-size:13px">${d.name}</span></div>
+        <span style="font-size:13px;font-weight:700">${d.pct}%</span>
+      </div>
+      <div class="pb-wrap" style="height:8px"><div class="pb" style="width:${d.pct}%;background:${d.clr}"></div></div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// USERS TABLE
+// =====================================================
+function getFilteredUsers(){
+  let u=[...S.users];
+  const f=S.usrFilters;
+  if(f.search)u=u.filter(x=>x.name.toLowerCase().includes(f.search.toLowerCase())||x.email.toLowerCase().includes(f.search.toLowerCase()));
+  if(f.status!=='all')u=u.filter(x=>x.status===f.status);
+  if(f.role!=='all')u=u.filter(x=>x.role===f.role);
+  u.sort((a,b)=>{
+    let va=a[S.usrSort],vb=b[S.usrSort];
+    if(va instanceof Date)va=va.getTime(),vb=vb.getTime();
+    else{va=String(va).toLowerCase();vb=String(vb).toLowerCase();}
+    return S.usrDir*(va>vb?1:va<vb?-1:0);
+  });
+  return u;
+}
+
+function renderUsers(){
+  const all=getFilteredUsers();
+  const total=all.length;
+  const pages=Math.max(1,Math.ceil(total/S.usrPerPage));
+  S.usrPage=Math.min(S.usrPage,pages);
+  const slice=all.slice((S.usrPage-1)*S.usrPerPage,S.usrPage*S.usrPerPage);
+  document.getElementById('usersSub').textContent=`${total} of ${S.users.length} users`;
+  document.getElementById('usrCount').textContent=`Showing ${slice.length} of ${total}`;
+  document.getElementById('pgInfo').textContent=`Page ${S.usrPage} of ${pages}`;
+  document.getElementById('usrBadge').textContent=S.users.length;
+
+  const tbody=document.getElementById('usrsTable');
+  tbody.innerHTML=slice.map(u=>`
+    <tr onclick="openUserModal(${u.id})">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="usr-cb" value="${u.id}"></td>
+      <td><div class="ucell"><div class="av" style="background:${u.color}">${u.initials}</div><div><div style="font-weight:600">${u.name}</div><div style="font-size:11px;color:var(--tm)">${u.email}</div></div></div></td>
+      <td><span class="badge ${u.role==='Admin'?'br':u.role==='Developer'?'bb':u.role==='Editor'?'bp':'bk'}">${u.role}</span></td>
+      <td style="color:var(--t2);font-size:12px">${u.dept}</td>
+      <td><span class="badge ${u.status==='active'?'bg':u.status==='suspended'?'br':'bk'}"><span class="sdot ${u.status==='active'?'dg':u.status==='suspended'?'dr':'dy'}"></span>${u.status}</span></td>
+      <td style="color:var(--t2);font-size:12px">${fmtDate(u.joined)}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="flex gap1">
+          <button class="btn btn-sm btn-s" onclick="openUserModal(${u.id})">✏️</button>
+          <button class="btn btn-sm btn-s" onclick="toggleUserStatus(${u.id})" title="${u.status==='active'?'Suspend':'Activate'}">${u.status==='active'?'🔒':'✅'}</button>
+          <button class="btn btn-sm btn-d" onclick="deleteUser(${u.id})">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  // Pagination
+  const pgEl=document.getElementById('pgBtns');
+  pgEl.innerHTML='';
+  const maxPages=Math.min(pages,5);
+  let start=Math.max(1,S.usrPage-2);
+  let end=Math.min(pages,start+maxPages-1);
+  start=Math.max(1,end-maxPages+1);
+  for(let i=start;i<=end;i++){
+    const b=document.createElement('button');
+    b.className='btn btn-sm '+(i===S.usrPage?'btn-p':'btn-s');
+    b.textContent=i;
+    b.onclick=()=>{S.usrPage=i;renderUsers();};
+    pgEl.appendChild(b);
+  }
+}
+
+function filterUsers(){
+  S.usrFilters.search=document.getElementById('usrSearch').value;
+  S.usrFilters.status=document.getElementById('usrStatusF').value;
+  S.usrFilters.role=document.getElementById('usrRoleF').value;
+  S.usrPage=1;
+  renderUsers();
+}
+
+function sortUsers(field){
+  if(S.usrSort===field)S.usrDir*=-1;
+  else{S.usrSort=field;S.usrDir=1;}
+  renderUsers();
+}
+
+function selAllUsers(checked){
+  document.querySelectorAll('.usr-cb').forEach(cb=>cb.checked=checked);
+}
+
+function prevPage(){if(S.usrPage>1){S.usrPage--;renderUsers();}}
+function nextPage(){const p=Math.ceil(getFilteredUsers().length/S.usrPerPage);if(S.usrPage<p){S.usrPage++;renderUsers();}}
+
+function openUserModal(id){
+  const u=S.users.find(x=>x.id===id);
+  if(!u)return;
+  document.getElementById('umTitle').textContent='Edit User: '+u.name;
+  document.getElementById('umBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div class="av" style="background:${u.color};width:56px;height:56px;font-size:18px">${u.initials}</div>
+      <div><div style="font-size:18px;font-weight:700">${u.name}</div><div style="color:var(--t2)">${u.email}</div></div>
+    </div>
+    <div class="g2">
+      <div class="ig"><label class="ilbl">Full Name</label><input class="inp" id="eu-name" value="${u.name}"></div>
+      <div class="ig"><label class="ilbl">Email</label><input class="inp" id="eu-email" value="${u.email}"></div>
+      <div class="ig"><label class="ilbl">Role</label><select class="sel" id="eu-role">${ROLES.map(r=>`<option${r===u.role?' selected':''}>${r}</option>`).join('')}</select></div>
+      <div class="ig"><label class="ilbl">Department</label><input class="inp" id="eu-dept" value="${u.dept}"></div>
+      <div class="ig"><label class="ilbl">Status</label><select class="sel" id="eu-status"><option${u.status==='active'?' selected':''}>active</option><option${u.status==='inactive'?' selected':''}>inactive</option><option${u.status==='suspended'?' selected':''}>suspended</option></select></div>
+      <div class="ig"><label class="ilbl">Location</label><input class="inp" id="eu-loc" value="${u.loc}"></div>
+    </div>
+    <div style="font-size:12px;color:var(--tm);margin-top:4px">Joined: ${fmtDate(u.joined)} · Last active: ${timeAgo(u.lastActive)}</div>
+  `;
+  document.getElementById('userModal').setAttribute('data-uid',id);
+  document.getElementById('userModal').classList.add('open');
+}
+function closeUserModal(){document.getElementById('userModal').classList.remove('open');}
+function saveUser(){
+  const id=+document.getElementById('userModal').getAttribute('data-uid');
+  const u=S.users.find(x=>x.id===id);
+  if(u){
+    u.name=document.getElementById('eu-name').value;
+    u.email=document.getElementById('eu-email').value;
+    u.role=document.getElementById('eu-role').value;
+    u.dept=document.getElementById('eu-dept').value;
+    u.status=document.getElementById('eu-status').value;
+    u.loc=document.getElementById('eu-loc').value;
+  }
+  closeUserModal();
+  renderUsers();
+  showToast('success','User updated!','Changes saved successfully');
+}
+
+function toggleUserStatus(id){
+  const u=S.users.find(x=>x.id===id);
+  if(!u)return;
+  u.status=u.status==='active'?'suspended':'active';
+  renderUsers();
+  showToast(u.status==='active'?'success':'warning',`User ${u.status==='active'?'activated':'suspended'}`,u.name);
+}
+
+function deleteUser(id){
+  const u=S.users.find(x=>x.id===id);
+  if(!u)return;
+  if(!confirm(`Delete user ${u.name}?`))return;
+  S.users=S.users.filter(x=>x.id!==id);
+  renderUsers();
+  showToast('error','User deleted',u.name+' has been removed');
+}
+
+function createUser(){
+  const name=document.getElementById('nuName').value.trim();
+  const email=document.getElementById('nuEmail').value.trim();
+  if(!name||!email){showToast('error','Missing fields','Name and email required');return;}
+  const newUser={
+    id:Math.max(...S.users.map(u=>u.id))+1,
+    name,email,role:document.getElementById('nuRole').value,
+    dept:document.getElementById('nuDept').value||'General',
+    status:'active',loc:'Unknown',
+    joined:new Date(),lastActive:new Date(),
+    color:pick(AVCLRS),initials:name.split(' ').map(w=>w[0]).join('').substring(0,2)
+  };
+  S.users.unshift(newUser);
+  closeModal('addUserModal');
+  document.getElementById('nuName').value='';
+  document.getElementById('nuEmail').value='';
+  renderUsers();
+  showToast('success','User created!',name+' added successfully');
+}
+
+function exportUsers(){
+  const csv='Name,Email,Role,Department,Status,Joined\n'+S.users.map(u=>`"${u.name}","${u.email}","${u.role}","${u.dept}","${u.status}","${fmtDate(u.joined)}"`).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv,'+encodeURIComponent(csv);
+  a.download='users.csv';a.click();
+  showToast('success','Exported!','users.csv downloaded');
+}
+
+// =====================================================
+// CONTENT
+// =====================================================
+function renderContent(){
+  const stats=[{icon:'📝',label:'Total Posts',val:allContent.length,clr:'#6366f1'},{icon:'✅',label:'Published',val:allContent.filter(c=>c.status==='published').length,clr:'#10b981'},{icon:'📋',label:'Drafts',val:allContent.filter(c=>c.status==='draft').length,clr:'#f59e0b'}];
+  document.getElementById('contentStats').innerHTML=stats.map(s=>`
+    <div class="stat-card" onclick="showToast('info','${s.label}','Filter applied')">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${s.clr}"></div>
+      <div class="stat-icon" style="background:${s.clr}22;margin-bottom:12px;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center">${s.icon}</div>
+      <div class="stat-val">${s.val}</div><div class="stat-lbl">${s.label}</div>
+    </div>
+  `).join('');
+  renderContentTable(allContent);
+}
+
+function renderContentTable(items){
+  const tbody=document.getElementById('contentTable');
+  tbody.innerHTML=items.map(c=>`
+    <tr onclick="showToast('info','${c.title.replace("'","\\'")}','Opening editor...')">
+      <td style="max-width:300px"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.title}</div><div style="font-size:11px;color:var(--tm)">by ${c.author}</div></td>
+      <td><span class="badge ${c.type==='Article'?'bb':c.type==='Tutorial'?'bp':'by'}">${c.type}</span></td>
+      <td><span class="badge ${c.status==='published'?'bg':c.status==='review'?'by':'bk'}">${c.status}</span></td>
+      <td style="font-weight:600">${fmtN(c.views)}</td>
+      <td style="color:var(--t2);font-size:12px">${fmtDate(c.date)}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="flex gap1">
+          <button class="btn btn-sm btn-s" onclick="showToast('success','Editing','Opening editor for post')">✏️</button>
+          <button class="btn btn-sm btn-d" onclick="showToast('error','Deleted','Post removed')">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterContent(q){
+  const items=allContent.filter(c=>c.title.toLowerCase().includes(q.toLowerCase())||c.author.toLowerCase().includes(q.toLowerCase()));
+  renderContentTable(items);
+}
+function filterContentType(type){
+  const q=document.getElementById('contentSearch')?.value||'';
+  let items=allContent.filter(c=>c.title.toLowerCase().includes(q.toLowerCase()));
+  if(type!=='all')items=items.filter(c=>c.type===type);
+  renderContentTable(items);
+}
+
+// =====================================================
+// ORDERS
+// =====================================================
+const ORD_STATS=[
+  {label:'Total Orders',val:allOrders.length,icon:'📦',clr:'#6366f1'},
+  {label:'Pending',val:allOrders.filter(o=>o.status==='pending').length,icon:'⏳',clr:'#f59e0b'},
+  {label:'Delivered',val:allOrders.filter(o=>o.status==='delivered').length,icon:'✅',clr:'#10b981'},
+  {label:'Cancelled',val:allOrders.filter(o=>o.status==='cancelled').length,icon:'❌',clr:'#ef4444'},
+];
+
+function renderOrders(){
+  document.getElementById('orderStats').innerHTML=ORD_STATS.map(s=>`
+    <div class="stat-card">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${s.clr}"></div>
+      <div class="stat-icon" style="background:${s.clr}22;margin-bottom:12px;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center">${s.icon}</div>
+      <div class="stat-val">${s.val}</div><div class="stat-lbl">${s.label}</div>
+    </div>
+  `).join('');
+  filterOrders();
+}
+
+function filterOrders(){
+  const q=(document.getElementById('ordSearch')?.value||'').toLowerCase();
+  const st=document.getElementById('ordStatusF')?.value||'all';
+  let items=[...allOrders];
+  if(q)items=items.filter(o=>o.id.toLowerCase().includes(q)||o.customer.toLowerCase().includes(q)||o.product.toLowerCase().includes(q));
+  if(st!=='all')items=items.filter(o=>o.status===st);
+  const tbody=document.getElementById('ordsTable');
+  tbody.innerHTML=items.slice(0,30).map(o=>`
+    <tr onclick="openOrderModal('${o.id}')">
+      <td style="font-family:monospace;font-size:12px;color:var(--accl)">${o.id}</td>
+      <td><div class="ucell"><div class="av" style="background:${o.color}">${o.initials}</div><span>${o.customer}</span></div></td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.product}</td>
+      <td style="font-weight:700">$${(o.price*o.qty).toLocaleString()}</td>
+      <td><span class="badge ${o.status==='delivered'?'bg':o.status==='cancelled'?'br':o.status==='shipped'?'bb':o.status==='processing'?'bp':'by'}">${o.status}</span></td>
+      <td style="color:var(--t2);font-size:12px">${fmtDate(o.date)}</td>
+      <td onclick="event.stopPropagation()">
+        <button class="btn btn-sm btn-s" onclick="openOrderModal('${o.id}')">👁</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openOrderModal(id){
+  const o=allOrders.find(x=>x.id===id);
+  if(!o)return;
+  document.getElementById('omTitle').textContent='Order '+o.id;
+  document.getElementById('omBody').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><div class="ilbl">Customer</div><div style="font-weight:600">${o.customer}</div></div>
+      <div><div class="ilbl">Email</div><div style="color:var(--t2)">${o.email}</div></div>
+      <div><div class="ilbl">Product</div><div style="font-weight:600">${o.product}</div></div>
+      <div><div class="ilbl">Quantity</div><div>${o.qty}</div></div>
+      <div><div class="ilbl">Unit Price</div><div style="font-weight:600">$${o.price}</div></div>
+      <div><div class="ilbl">Total</div><div style="font-weight:700;font-size:18px;color:var(--grn)">$${(o.price*o.qty).toLocaleString()}</div></div>
+    </div>
+    <div class="ig"><label class="ilbl">Status</label>
+      <select class="sel" id="om-status">${ORDS_STATUS.map(s=>`<option${s===o.status?' selected':''}>${s}</option>`).join('')}</select>
+    </div>
+    <div class="ig"><label class="ilbl">Order Date</label><input class="inp" value="${fmtDate(o.date)}" readonly></div>
+  `;
+  document.getElementById('orderModal').classList.add('open');
+}
+
+// =====================================================
+// SECURITY
+// =====================================================
+const THREATS=[
+  {icon:'🦠',name:'Malware Detected',desc:'Suspicious file found on server node 2',sev:'high',clr:'var(--red)',bg:'rgba(239,68,68,.1)'},
+  {icon:'🔓',name:'Brute Force Attempt',desc:'14 failed login attempts from 185.220.101.x',sev:'high',clr:'var(--red)',bg:'rgba(239,68,68,.1)'},
+  {icon:'⚠️',name:'Outdated Dependencies',desc:'3 npm packages have critical vulnerabilities',sev:'medium',clr:'var(--yel)',bg:'rgba(245,158,11,.1)'},
+];
+const SESSIONS_DATA=[
+  {user:'Alex Johnson',loc:'Kyiv, UA',device:'Chrome 120 / macOS',ip:'192.168.1.1',current:true,time:'Active now'},
+  {user:'Alex Johnson',loc:'New York, US',device:'Safari 17 / iPhone',ip:'104.20.45.12',current:false,time:'2h ago'},
+  {user:'Alex Johnson',loc:'London, UK',device:'Firefox 121 / Windows',ip:'82.14.55.200',current:false,time:'Yesterday'},
+];
+
+function renderSecurity(){
+  // Score ring
+  const score=84;
+  const circ=document.getElementById('srCircle');
+  const r=54,circ_=2*Math.PI*r;
+  if(circ){circ.style.strokeDasharray=circ_.toFixed(1);circ.style.strokeDashoffset=(circ_*(1-score/100)).toFixed(1);}
+
+  // Threats
+  const el=document.getElementById('threatsList');
+  if(el)el.innerHTML=THREATS.map(t=>`
+    <div class="threat-item">
+      <div class="thr-ico" style="background:${t.bg}">${t.icon}</div>
+      <div class="thr-info"><div class="thr-name">${t.name}</div><div class="thr-desc">${t.desc}</div></div>
+      <span class="badge ${t.sev==='high'?'br':'by'}">${t.sev}</span>
+      <button class="btn btn-sm btn-s" onclick="dismissThreat(this);event.stopPropagation()">Dismiss</button>
+    </div>
+  `).join('');
+
+  // Sessions
+  const sel=document.getElementById('sessListEl');
+  document.getElementById('sessCnt').textContent=SESSIONS_DATA.length+' active';
+  if(sel)sel.innerHTML=SESSIONS_DATA.map((s,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)">
+      <div style="font-size:20px">${s.device.includes('iPhone')||s.device.includes('mobile')?'📱':'💻'}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${s.device}</div>
+        <div style="font-size:12px;color:var(--tm)">${s.loc} · ${s.ip} · ${s.time}</div>
+      </div>
+      ${s.current?'<span class="badge bg">Current</span>':`<button class="btn btn-sm btn-d" onclick="revokeSession(this)">Revoke</button>`}
+    </div>
+  `).join('');
+
+  renderLoginChart();
+}
+
+function dismissThreat(btn){
+  btn.closest('.threat-item').remove();
+  const rem=document.querySelectorAll('.threat-item').length;
+  document.getElementById('thrBadge').textContent=rem||'';
+  showToast('success','Threat dismissed','Marked as resolved');
+}
+
+function revokeSession(btn){
+  btn.closest('div[style*="border-bottom"]').remove();
+  const cnt=document.getElementById('sessCnt');
+  const n=parseInt(cnt.textContent)-1;
+  cnt.textContent=n+' active';
+  showToast('warning','Session revoked','Remote session terminated');
+}
+
+function runScan(){
+  showToast('info','Scan started','Running full security scan...');
+  setTimeout(()=>showToast('success','Scan complete','No new threats found'),3000);
+}
+
+// =====================================================
+// LOGS
+// =====================================================
+function renderLogs(){
+  const lvl=document.getElementById('logLvl')?.value||'all';
+  const src=document.getElementById('logSrc')?.value||'all';
+  const q=(document.getElementById('logSearch')?.value||'').toLowerCase();
+  let logs=allLogs.filter(l=>(lvl==='all'||l.level===lvl)&&(src==='all'||l.source===src)&&(!q||l.msg.toLowerCase().includes(q)||l.source.includes(q)));
+  const el=document.getElementById('logsEl');
+  if(!el)return;
+  el.innerHTML=logs.slice(0,100).map(l=>`
+    <div class="log-line log-${l.level}">
+      <span style="color:var(--tm)">[${l.ts.toLocaleTimeString()}]</span>
+      <span class="badge ${l.level==='error'?'br':l.level==='warning'?'by':l.level==='debug'?'bk':'bb'}" style="margin:0 6px;font-size:10px">${l.level.toUpperCase()}</span>
+      <span style="color:var(--t2)">[${l.source}]</span>
+      <span style="color:var(--t1);margin-left:6px">${l.msg}</span>
+    </div>
+  `).join('');
+  if(document.getElementById('autoScroll')?.checked)el.scrollTop=el.scrollHeight;
+}
+
+let logTimer=null;
+function startLogFeed(){
+  if(logTimer)return;
+  logTimer=setInterval(()=>{
+    if(S.page!=='logs'){clearInterval(logTimer);logTimer=null;return;}
+    const src=pick(LOG_SOURCES);
+    const lvl=rnd(0,10)>7?rnd(0,3)>2?'error':'warning':'info';
+    allLogs.unshift({id:allLogs.length,ts:new Date(),level:lvl,source:src,msg:pick(LOG_MSGS[src])});
+    renderLogs();
+  },2500);
+}
+
+function clearLogs(){allLogs.length=0;renderLogs();showToast('info','Logs cleared','All logs have been removed');}
+function exportLogs(){
+  const txt=allLogs.map(l=>`[${l.ts.toISOString()}] [${l.level.toUpperCase()}] [${l.source}] ${l.msg}`).join('\n');
+  const a=document.createElement('a');a.href='data:text/plain,'+encodeURIComponent(txt);a.download='system.log';a.click();
+  showToast('success','Downloaded','system.log saved');
+}
+
+// =====================================================
+// SETTINGS
+// =====================================================
+function switchStab(tab){
+  document.querySelectorAll('.stab').forEach((t,i)=>t.classList.toggle('active',t.getAttribute('onclick')==`switchStab('${tab}')`));
+  document.querySelectorAll('.ssec').forEach(s=>s.classList.toggle('active',s.id===`ss-${tab}`));
+  if(tab==='api')renderApiKeys();
+}
+
+const apiKeysList=[
+  {name:'Production Key',key:'nxs_live_**********************a1b2',created:'Jan 15, 2024',lastUsed:'2h ago',active:true},
+  {name:'Development Key',key:'nxs_test_**********************c3d4',created:'Dec 01, 2023',lastUsed:'Yesterday',active:true},
+  {name:'Staging Key',key:'nxs_stg_***********************e5f6',created:'Nov 20, 2023',lastUsed:'5 days ago',active:false},
+];
+function renderApiKeys(){
+  const el=document.getElementById('apiKeys');
+  if(!el)return;
+  el.innerHTML=apiKeysList.map((k,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bdr)">
+      <div style="flex:1">
+        <div style="font-weight:600;margin-bottom:2px">${k.name}</div>
+        <div style="font-family:monospace;font-size:12px;color:var(--tm)">${k.key}</div>
+        <div style="font-size:11px;color:var(--tm);margin-top:2px">Created ${k.created} · Last used ${k.lastUsed}</div>
+      </div>
+      <span class="badge ${k.active?'bg':'bk'}">${k.active?'Active':'Inactive'}</span>
+      <button class="btn btn-sm btn-s" onclick="copyApiKey(${i})">📋 Copy</button>
+      <button class="btn btn-sm btn-d" onclick="revokeKey(${i})">Revoke</button>
+    </div>
+  `).join('');
+}
+function copyApiKey(i){showToast('success','Copied!','API key copied to clipboard');}
+function revokeKey(i){apiKeysList[i].active=false;renderApiKeys();showToast('warning','Revoked','API key has been deactivated');}
+function generateApiKey(){apiKeysList.push({name:'New Key '+Date.now(),key:'nxs_new_'+Math.random().toString(36).substring(2,10)+'...',created:'Just now',lastUsed:'Never',active:true});renderApiKeys();showToast('success','Key created!','New API key generated');}
+function saveSettings(){showToast('success','Settings saved!','All changes have been applied');}
+
+// =====================================================
+// NOTIFICATIONS
+// =====================================================
+function renderNotifs(){
+  const el=document.getElementById('notifList');
+  if(!el)return;
+  el.innerHTML=S.notifs.map(n=>`
+    <div class="ni${n.unread?' unread':''}" onclick="readNotif(${n.id})">
+      <div class="ni-icon" style="background:${n.type==='error'?'rgba(239,68,68,.15)':n.type==='success'?'rgba(16,185,129,.15)':n.type==='warning'?'rgba(245,158,11,.15)':'rgba(99,102,241,.15)'}">${n.icon}</div>
+      <div class="ni-body"><div class="ni-title">${n.title}</div><div class="ni-desc">${n.desc}</div><div class="ni-time">${timeAgo(n.time)}</div></div>
+      ${n.unread?'<div class="ui"></div>':''}
+    </div>
+  `).join('');
+  const unread=S.notifs.filter(n=>n.unread).length;
+  const dot=document.getElementById('ndot');
+  if(dot)dot.style.display=unread?'block':'none';
+}
+function toggleNotif(){document.getElementById('notifPanel').classList.toggle('open');renderNotifs();}
+function closeNotif(){document.getElementById('notifPanel').classList.remove('open');}
+function readNotif(id){const n=S.notifs.find(x=>x.id===id);if(n)n.unread=false;renderNotifs();}
+function markAllRead(){S.notifs.forEach(n=>n.unread=false);renderNotifs();}
+
+// =====================================================
+// TOAST
+// =====================================================
+function showToast(type,title,desc){
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const tc=document.getElementById('tc');
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`<div class="toast-icon">${icons[type]||'ℹ️'}</div><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-desc">${desc||''}</div></div><button onclick="this.parentElement.remove()" style="color:var(--tm);flex-shrink:0">✕</button>`;
+  tc.appendChild(t);
+  setTimeout(()=>t.remove&&t.remove(),4000);
+}
+
+// =====================================================
+// CMD PALETTE
+// =====================================================
+const CMD_ITEMS=[
+  {icon:'📊',label:'Go to Dashboard',sub:'Page',action:()=>nav('dashboard'),kbd:'D'},
+  {icon:'📈',label:'Go to Analytics',sub:'Page',action:()=>nav('analytics'),kbd:'A'},
+  {icon:'👥',label:'Go to Users',sub:'Page',action:()=>nav('users'),kbd:'U'},
+  {icon:'📝',label:'Go to Content',sub:'Page',action:()=>nav('content')},
+  {icon:'🛒',label:'Go to Orders',sub:'Page',action:()=>nav('orders')},
+  {icon:'🔒',label:'Go to Security',sub:'Page',action:()=>nav('security')},
+  {icon:'📋',label:'Go to Logs',sub:'Page',action:()=>nav('logs')},
+  {icon:'⚙️',label:'Go to Settings',sub:'Page',action:()=>nav('settings')},
+  {icon:'🌙',label:'Toggle Dark/Light Mode',sub:'Action',action:()=>toggleTheme()},
+  {icon:'➕',label:'Add New User',sub:'Action',action:()=>{nav('users');setTimeout(()=>openModal('addUserModal'),300);}},
+  {icon:'📥',label:'Export Report',sub:'Action',action:()=>exportReport()},
+  {icon:'🔍',label:'Run Security Scan',sub:'Security',action:()=>{nav('security');setTimeout(()=>runScan(),300);}},
+  {icon:'🗑',label:'Clear Logs',sub:'System',action:()=>{nav('logs');setTimeout(()=>clearLogs(),300);}},
+];
+let cmdSel=0,cmdFiltered=[...CMD_ITEMS];
+function openCmd(){
+  document.getElementById('cmdOv').classList.add('open');
+  document.getElementById('cmdInp').value='';
+  filterCmd('');
+  setTimeout(()=>document.getElementById('cmdInp').focus(),50);
+}
+function closeCmdPalette(){document.getElementById('cmdOv').classList.remove('open');}
+function filterCmd(q){
+  cmdSel=0;
+  cmdFiltered=q?CMD_ITEMS.filter(c=>c.label.toLowerCase().includes(q.toLowerCase())||c.sub.toLowerCase().includes(q.toLowerCase())):CMD_ITEMS;
+  document.getElementById('cmdItems').innerHTML=cmdFiltered.map((c,i)=>`
+    <div class="cmd-item${i===0?' sel':''}" onclick="runCmd(${i})">
+      <div class="cmd-ico">${c.icon}</div>
+      <div style="flex:1"><div class="cmd-lbl">${c.label}</div><div class="cmd-sub">${c.sub}</div></div>
+      ${c.kbd?`<span class="cmd-kbd">${c.kbd}</span>`:''}
+    </div>
+  `).join('');
+}
+function runCmd(i){
+  if(cmdFiltered[i])cmdFiltered[i].action();
+  closeCmdPalette();
+}
+function cmdKey(e){
+  const items=document.querySelectorAll('.cmd-item');
+  if(e.key==='Escape')closeCmdPalette();
+  else if(e.key==='ArrowDown'){cmdSel=Math.min(cmdSel+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('sel',i===cmdSel));}
+  else if(e.key==='ArrowUp'){cmdSel=Math.max(cmdSel-1,0);items.forEach((el,i)=>el.classList.toggle('sel',i===cmdSel));}
+  else if(e.key==='Enter'){runCmd(cmdSel);}
+}
+
+// =====================================================
+// MISC
+// =====================================================
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function exportReport(){showToast('success','Export started!','Your report is being generated...');setTimeout(()=>showToast('info','Ready','report.csv has been prepared'),2000);}
+function refreshData(){showToast('info','Refreshing...','Fetching latest data');setTimeout(()=>{renderStats();renderActivity();showToast('success','Updated!','Dashboard refreshed');},1000);}
+function changePeriod(v){showToast('info',`Period: Last ${v} days`,'Data updated');renderMainChart();}
+
+// =====================================================
+// KEYBOARD SHORTCUTS
+// =====================================================
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openCmd();}
+  if(e.key==='Escape'){
+    closeCmdPalette();
+    closeNotif();
+    closeModal('userModal');
+    closeModal('addUserModal');
+    closeModal('orderModal');
+  }
+});
+
+// Close notif panel when clicking outside
+document.addEventListener('click',e=>{
+  const panel=document.getElementById('notifPanel');
+  const btn=document.getElementById('notifBtn');
+  if(panel.classList.contains('open')&&!panel.contains(e.target)&&!btn.contains(e.target)){closeNotif();}
+});
+
+// =====================================================
+// INIT
+// =====================================================
+function init(){
+  initTheme();
+  renderStats();
+  renderMainChart();
+  renderDonut();
+  renderActivity();
+  renderCalendar();
+  renderRegions();
+  renderNotifs();
+  renderUsers();
+
+  // Auto update activity every 8s
+  setInterval(addActivity,8000);
+
+  // Simulate new notifications
+  setInterval(()=>{
+    if(Math.random()>0.7){
+      S.notifs.unshift({id:Date.now(),icon:pick(['🔐','📊','👤','🛒','⚠️']),title:pick(['New login','Report ready','User joined','Order placed','Warning']),desc:'Auto-generated event at '+new Date().toLocaleTimeString(),time:new Date(),type:pick(['info','success','warning']),unread:true});
+      renderNotifs();
+    }
+  },15000);
+
+  showToast('success','Welcome back!','Dashboard loaded successfully');
+}
+
+window.addEventListener('DOMContentLoaded',init);
+</script>
 </body>
 </html>
